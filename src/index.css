@@ -34,9 +34,9 @@
   /* 3D Showcase Perspective Variables */
   --sizeCreaBlock: 260px;
   --bgCreaBlock: #FFFFFF;
-  --blockTranslateX: 180px;
-  --blockRotateY: 36deg;
-  --marginSize: 34px;
+  --blockTranslateX: 140px;
+  --blockRotateY: 28deg;
+  --marginSize: 8px;
   --shadowColor: 6px 6px 0px #1B1B1B;
   --blocImgSize: 180px;
 

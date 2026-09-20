@@ -477,35 +477,36 @@
   box-shadow: 2px 2px 0px #1B1B1B;
 }
 
-/* Top Scholars 5-Card Responsive Showcase (Spacious & Non-congested) */
+/* 3D Staggered Showcase Container (CodePen 3D perspective effect, spacious) */
 .creationsBlocUl {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.25rem;
-  padding: 0.75rem 0 1.25rem 0;
-  width: 100%;
+  white-space: nowrap;
+  text-align: center;
+  min-height: 440px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 30px 10px 40px 10px;
+  perspective: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .creaBlock {
-  width: 100%;
+  width: var(--sizeCreaBlock);
   background-color: #FFFFFF;
-  padding: 1.25rem;
-  border-radius: 16px;
+  padding: 22px 18px 20px 18px;
+  border-radius: 14px;
   position: relative;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 4px 4px 0px #1B1B1B;
+  display: inline-block;
+  white-space: normal;
+  vertical-align: top;
+  transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 5px 5px 0px #1B1B1B;
   cursor: pointer;
   border: 2.5px solid #1B1B1B;
   text-align: left;
-  box-sizing: border-box;
-}
-
-.creaBlock:hover {
-  transform: translateY(-8px);
-  box-shadow: 8px 8px 0px #1B1B1B;
+  flex-shrink: 0;
 }
 
 .card-prez-header {
@@ -674,16 +675,89 @@
 .creaBlockPrez:nth-child(4) .lineSeparator { background-color: #00FFAE; }
 .creaBlockPrez:nth-child(5) .lineSeparator { background-color: #FF4081; }
 
-/* Individual Top Scholar Card Accents */
-.creaBlockPrez {
-  border: 2.5px solid #1B1B1B;
-  box-shadow: 4px 4px 0px #1B1B1B;
-  transition: all 0.2s ease;
+/* 3D Stacking & Overlap Dynamics (Tuned so cards are not congested!) */
+.creaBlockPrez:nth-child(1) {
+  z-index: 1;
+  transform: scale(0.94);
+}
+.creaBlockPrez:nth-child(1):hover {
+  transform: scale(1.08) translateZ(40px);
+  z-index: 10;
+  box-shadow: 10px 10px 0px #1B1B1B;
+}
+.creaBlockPrez:nth-child(1):hover ~ .creaBlockPrez:nth-child(2) {
+  transform: scale(0.90) translateX(var(--blockTranslateX)) rotateY(var(--blockRotateY));
+}
+.creaBlockPrez:nth-child(1):hover ~ .creaBlockPrez:nth-child(3) {
+  transform: scale(0.93) translateX(var(--blockTranslateX)) rotateY(var(--blockRotateY));
+}
+.creaBlockPrez:nth-child(1):hover ~ .creaBlockPrez:nth-child(4) {
+  transform: scale(0.96) translateX(var(--blockTranslateX)) rotateY(var(--blockRotateY));
+}
+.creaBlockPrez:nth-child(1):hover ~ .creaBlockPrez:nth-child(5) {
+  transform: scale(1.00) translateX(var(--blockTranslateX)) rotateY(var(--blockRotateY));
 }
 
-.creaBlockPrez:hover {
-  transform: translateY(-6px);
-  box-shadow: 7px 7px 0px #1B1B1B;
+.creaBlockPrez:nth-child(2) {
+  z-index: 2;
+  margin-left: calc(-5.5 * var(--marginSize));
+  transform: scale(0.96);
+}
+.creaBlockPrez:nth-child(2):hover {
+  transform: scale(1.08) translateZ(40px);
+  z-index: 10;
+  box-shadow: 10px 10px 0px #1B1B1B;
+}
+.creaBlockPrez:nth-child(2):hover ~ .creaBlockPrez:nth-child(3) {
+  transform: scale(0.92) translateX(var(--blockTranslateX)) rotateY(var(--blockRotateY));
+}
+.creaBlockPrez:nth-child(2):hover ~ .creaBlockPrez:nth-child(4) {
+  transform: scale(0.95) translateX(var(--blockTranslateX)) rotateY(var(--blockRotateY));
+}
+.creaBlockPrez:nth-child(2):hover ~ .creaBlockPrez:nth-child(5) {
+  transform: scale(0.98) translateX(var(--blockTranslateX)) rotateY(var(--blockRotateY));
+}
+
+.creaBlockPrez:nth-child(3) {
+  z-index: 3;
+  margin-left: calc(-5.5 * var(--marginSize));
+  transform: scale(0.98);
+}
+.creaBlockPrez:nth-child(3):hover {
+  transform: scale(1.08) translateZ(40px);
+  z-index: 10;
+  box-shadow: 10px 10px 0px #1B1B1B;
+}
+.creaBlockPrez:nth-child(3):hover ~ .creaBlockPrez:nth-child(4) {
+  transform: scale(0.94) translateX(var(--blockTranslateX)) rotateY(var(--blockRotateY));
+}
+.creaBlockPrez:nth-child(3):hover ~ .creaBlockPrez:nth-child(5) {
+  transform: scale(0.98) translateX(var(--blockTranslateX)) rotateY(var(--blockRotateY));
+}
+
+.creaBlockPrez:nth-child(4) {
+  z-index: 4;
+  margin-left: calc(-5.5 * var(--marginSize));
+  transform: scale(1.01);
+}
+.creaBlockPrez:nth-child(4):hover {
+  transform: scale(1.08) translateZ(40px);
+  z-index: 10;
+  box-shadow: 10px 10px 0px #1B1B1B;
+}
+.creaBlockPrez:nth-child(4):hover ~ .creaBlockPrez:nth-child(5) {
+  transform: scale(0.97) translateX(var(--blockTranslateX)) rotateY(var(--blockRotateY));
+}
+
+.creaBlockPrez:nth-child(5) {
+  z-index: 5;
+  margin-left: calc(-5.5 * var(--marginSize));
+  transform: scale(1.04);
+}
+.creaBlockPrez:nth-child(5):hover {
+  transform: scale(1.08) translateZ(40px);
+  z-index: 10;
+  box-shadow: 10px 10px 0px #1B1B1B;
 }
 
 /* ========================================================
@@ -3802,8 +3876,90 @@
 .interactive-chart-svg {
   width: 100%;
   height: auto;
-  max-height: 320px;
+  min-height: 380px;
+  max-height: 540px;
   display: block;
+}
+
+/* Program Color Legend Bar */
+.program-color-legend-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  background: #FFFFFF;
+  border: 2px solid #1B1B1B;
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  box-shadow: 2.5px 2.5px 0px #1B1B1B;
+}
+
+.legend-lead-label {
+  font-size: 0.775rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #1B1B1B;
+  white-space: nowrap;
+}
+
+.program-legend-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.program-legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  border: 1.5px solid #D1D5DB;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  background: #FFFFFF;
+  transition: all 0.15s ease;
+}
+
+.program-legend-chip:hover {
+  border-color: #1B1B1B;
+  transform: translateY(-1px);
+}
+
+.program-legend-chip.is-selected {
+  border-color: #1B1B1B;
+  box-shadow: 2px 2px 0px #1B1B1B;
+  background: #FFFDF0;
+  transform: translateY(-1px);
+}
+
+.prog-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid #1B1B1B;
+  flex-shrink: 0;
+}
+
+.prog-name {
+  color: #1B1B1B;
+  font-weight: 800;
+}
+
+.detail-dept-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.dept-color-indicator-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid #1B1B1B;
 }
 
 /* Histogram Hover Tooltip */

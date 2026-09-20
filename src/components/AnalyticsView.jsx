@@ -2,6 +2,20 @@ import { useState, useMemo } from 'react';
 import { AnalyticsIcon, FilterIcon } from './Icons';
 import { departments } from '../data/students';
 
+// 10 Distinct, High-Contrast Department Program Colors
+export const departmentColors = {
+  'Computer Science': '#2563EB',         // Vibrant Blue
+  'Information Technology': '#00BFFF',   // Bright Sky Cyan
+  'Artificial Intelligence': '#8B5CF6',  // Deep Purple
+  'Electronics & Communication': '#F59E0B', // Amber Gold
+  'Mechanical Engineering': '#EF4444',   // Bright Red
+  'Civil Engineering': '#10B981',        // Emerald Green
+  'Electrical Engineering': '#F97316',   // Vivid Orange
+  'Data Science': '#EC4899',             // Hot Pink
+  'Cybersecurity': '#14B8A6',            // Teal
+  'Aerospace Engineering': '#6366F1'     // Indigo
+};
+
 function AnalyticsView({ students }) {
   const total = students.length;
 
@@ -49,15 +63,22 @@ function AnalyticsView({ students }) {
 
   const maxHistCount = Math.max(...histogramBins.map(b => b.count), 180);
 
-  // 2. ACCURATE SCATTER PLOT DATA (X: 70% to 100%, Y: 2.50 to 4.00)
+  // 2. SCATTER PLOT DATA: Sampled across all 10 programs with distinct assigned colors
   const scatterFilteredStudents = useMemo(() => {
-    let pool = scatterDept === 'All' ? students : students.filter(s => s.department === scatterDept);
-    // When viewing "All" 1,000 students, sample 80 nicely distributed representative students to keep plot spacious and non-congested
-    if (scatterDept === 'All' && pool.length > 85) {
-      const step = Math.floor(pool.length / 85);
-      return pool.filter((_, idx) => idx % step === 0).slice(0, 85);
+    if (scatterDept === 'All') {
+      // Pick 10 varied students from each of the 10 departments (100 total) to avoid artificial row stripes
+      const sampled = [];
+      departments.forEach(dept => {
+        const inDept = students.filter(s => s.department === dept);
+        for (let i = 0; i < 10; i++) {
+          const idx = (i * 9 + 4) % (inDept.length || 1);
+          if (inDept[idx]) sampled.push(inDept[idx]);
+        }
+      });
+      return sampled;
     }
-    return pool;
+    // If a specific department is selected, display all students in that department
+    return students.filter(s => s.department === scatterDept);
   }, [students, scatterDept]);
 
   // Linear Regression Calculation for Scatter Trendline: y = m*x + b
@@ -88,12 +109,12 @@ function AnalyticsView({ students }) {
   }, [scatterFilteredStudents]);
 
   // Coordinates mapper: X from 70% to 100%, Y from 2.50 to 4.00
-  // SVG Area: X from 80 to 760 (width 680), Y from 40 to 360 (height 320)
+  // SVG Area: X from 80 to 840 (width 760), Y from 70 to 430 (height 360)
   const mapScatterCoords = (attendance, gpa) => {
     const clampedAtt = Math.max(70, Math.min(100, attendance || 85));
     const clampedGpa = Math.max(2.50, Math.min(4.00, gpa || 3.33));
-    const x = 80 + ((clampedAtt - 70) / 30) * 680;
-    const y = 360 - ((clampedGpa - 2.50) / 1.50) * 320;
+    const x = 80 + ((clampedAtt - 70) / 30) * 760;
+    const y = 430 - ((clampedGpa - 2.50) / 1.50) * 360;
     return { x, y };
   };
 
@@ -111,6 +132,7 @@ function AnalyticsView({ students }) {
         avgGpa: deptAvgGpa,
         avgAtt: deptAvgAtt,
         deansCount,
+        color: departmentColors[d] || '#2563EB',
         pct: total > 0 ? ((count / total) * 100).toFixed(1) : 0
       };
     }).sort((a, b) => parseFloat(b.avgGpa) - parseFloat(a.avgGpa));
@@ -141,12 +163,12 @@ function AnalyticsView({ students }) {
           <div>
             <h1 className="analytics-main-title">Institutional Academic Analytics &amp; Statistical Charts</h1>
             <p className="analytics-main-subtitle">
-              Cumulative GPA distribution histogram, attendance correlation scatter plot, and department benchmarks.
+              Cumulative GPA distribution histogram, attendance correlation scatter plot with program color-coding, and department benchmarks.
             </p>
           </div>
         </div>
         <div className="analytics-header-pills">
-          <span className="analytics-pill-tag">Sample Size: {total} Records</span>
+          <span className="analytics-pill-tag">10 Dedicated Program Colors</span>
           <span className="analytics-pill-tag pill-gold">Live Math Engine</span>
         </div>
       </div>
@@ -316,14 +338,14 @@ function AnalyticsView({ students }) {
         </div>
       </div>
 
-      {/* SECTION 2: UNCONGESTED ACCURATE ATTENDANCE VS GPA SCATTER PLOT */}
+      {/* SECTION 2: BIGGER, UNCONGESTED SCATTER PLOT WITH PROGRAM COLOR ALLOCATION */}
       <div className="analytics-card-tile full-width" id="scatter-section">
         <div className="chart-header-row">
           <div>
-            <div className="chart-tag-badge tag-cyan">Accurate Correlation</div>
+            <div className="chart-tag-badge tag-cyan">Department Program Colors</div>
             <h2 className="analytics-tile-title">Attendance Rate vs. Cumulative GPA Scatter Plot</h2>
             <p className="analytics-tile-desc">
-              Accurate coordinate mapping across student attendance (70%–100%) and GPA (2.50–4.00). Filter by program or hover points for individual scholar data.
+              Each academic program is allocated a designated unique color. High-resolution canvas with prominent quadrant markers and regression trendline.
             </p>
           </div>
 
@@ -331,7 +353,7 @@ function AnalyticsView({ students }) {
           <div className="scatter-filter-controls">
             <label htmlFor="scatter-dept-select" className="scatter-select-label">
               <FilterIcon size={14} />
-              <span>Program Scope:</span>
+              <span>Program Filter:</span>
             </label>
             <select
               id="scatter-dept-select"
@@ -339,42 +361,87 @@ function AnalyticsView({ students }) {
               onChange={(e) => setScatterDept(e.target.value)}
               className="scatter-dept-dropdown"
             >
-              <option value="All">All 10 Programs (Clean 85-Scholar Sample)</option>
+              <option value="All">All 10 Programs (Balanced Multi-Color View)</option>
               {departments.map(d => (
-                <option key={d} value={d}>{d} (All ~100 Students)</option>
+                <option key={d} value={d}>{d} Only</option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Scatter Plot SVG Container (Spacious 800x420) */}
+        {/* 10 Department Color Legend Bar */}
+        <div className="program-color-legend-bar">
+          <span className="legend-lead-label">Program Allocation:</span>
+          <div className="program-legend-pills">
+            {departments.map(dept => {
+              const color = departmentColors[dept] || '#2563EB';
+              const isSelected = scatterDept === dept;
+              return (
+                <button
+                  key={dept}
+                  type="button"
+                  className={`program-legend-chip ${isSelected ? 'is-selected' : ''}`}
+                  onClick={() => setScatterDept(isSelected ? 'All' : dept)}
+                  title={`Click to filter by ${dept}`}
+                  style={{
+                    borderColor: isSelected ? '#1B1B1B' : '#D1D5DB',
+                    background: isSelected ? '#FFFFFF' : '#F9FAFB'
+                  }}
+                >
+                  <span className="prog-dot" style={{ backgroundColor: color }}></span>
+                  <span className="prog-name">{dept}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Scatter Plot SVG Container (BIGGER 900x520 CANVAS) */}
         <div className="scatter-svg-wrapper">
-          <svg viewBox="0 0 800 420" className="interactive-chart-svg">
-            {/* Quadrant 1: Top-Right (High Att >=88%, High GPA >=3.35) */}
-            <rect x="488" y="40" width="272" height="143" fill="#00FFAE" fillOpacity="0.09" rx="8" />
-            <text x="750" y="60" textAnchor="end" fontSize="10" fontWeight="900" fill="#059669" letterSpacing="0.5">
+          <svg viewBox="0 0 900 520" className="interactive-chart-svg">
+            {/* Top-Right Quadrant Background: High Achievers */}
+            <rect x="536" y="65" width="304" height="161" fill="#00FFAE" fillOpacity="0.08" rx="10" />
+
+            {/* PROMINENT TOP-RIGHT BADGE: Raised high so it is fully visible and not cut off */}
+            <rect x="520" y="16" width="320" height="30" rx="8" fill="#E8FFF5" stroke="#059669" strokeWidth="2" />
+            <text x="680" y="36" textAnchor="middle" fontSize="11" fontWeight="900" fill="#059669" letterSpacing="0.4">
               HIGH ACHIEVERS (Att ≥88%, GPA ≥3.35)
             </text>
 
-            {/* Quadrant 2: Bottom-Left (Low Att <88%, Low GPA <3.35) */}
-            <rect x="80" y="183" width="408" height="177" fill="#FF6F61" fillOpacity="0.08" rx="8" />
-            <text x="95" y="348" fontSize="10" fontWeight="900" fill="#DC2626" letterSpacing="0.5">
-              ACADEMIC SUPPORT FOCUS (Att &lt;88%, GPA &lt;3.35)
+            {/* Top-Left Quadrant Background: Autonomous Scholars */}
+            <rect x="80" y="65" width="456" height="161" fill="#00BFFF" fillOpacity="0.06" rx="10" />
+
+            {/* PROMINENT TOP-LEFT BADGE: Raised high so it is fully visible */}
+            <rect x="80" y="16" width="340" height="30" rx="8" fill="#EBF8FF" stroke="#2563EB" strokeWidth="2" />
+            <text x="250" y="36" textAnchor="middle" fontSize="11" fontWeight="900" fill="#2563EB" letterSpacing="0.4">
+              AUTONOMOUS SCHOLARS (Att &lt;88%, GPA ≥3.35)
+            </text>
+
+            {/* Bottom-Left Quadrant Background: Academic Support Zone */}
+            <rect x="80" y="226" width="456" height="204" fill="#FF6F61" fillOpacity="0.07" rx="10" />
+            <text x="95" y="455" fontSize="11" fontWeight="900" fill="#DC2626" letterSpacing="0.4">
+              ACADEMIC SUPPORT ZONE (Att &lt;88%, GPA &lt;3.35)
+            </text>
+
+            {/* Bottom-Right Quadrant Background: Dedicated Effort */}
+            <rect x="536" y="226" width="304" height="204" fill="#FFE600" fillOpacity="0.06" rx="10" />
+            <text x="830" y="455" textAnchor="end" fontSize="11" fontWeight="900" fill="#B45309" letterSpacing="0.4">
+              DEDICATED EFFORT (Att ≥88%, GPA &lt;3.35)
             </text>
 
             {/* Quadrant Dividing Lines (Actual Means: 88% and 3.35) */}
-            <line x1="488" y1="40" x2="488" y2="360" stroke="#9CA3AF" strokeWidth="2" strokeDasharray="4 4" />
-            <text x="494" y="375" fontSize="10" fontWeight="800" fill="#4B5563">Mean Att (88%)</text>
+            <line x1="536" y1="55" x2="536" y2="430" stroke="#9CA3AF" strokeWidth="2" strokeDasharray="5 5" />
+            <text x="542" y="445" fontSize="10" fontWeight="900" fill="#374151">Mean Att (88%)</text>
 
-            <line x1="80" y1="183" x2="760" y2="183" stroke="#9CA3AF" strokeWidth="2" strokeDasharray="4 4" />
-            <text x="40" y="187" fontSize="10" fontWeight="800" fill="#4B5563">3.35</text>
+            <line x1="80" y1="226" x2="840" y2="226" stroke="#9CA3AF" strokeWidth="2" strokeDasharray="5 5" />
+            <text x="40" y="230" fontSize="11" fontWeight="900" fill="#374151">3.35</text>
 
             {/* Horizontal Gridlines & Y-Axis Ticks (2.50 to 4.00) */}
             {[2.50, 2.75, 3.00, 3.25, 3.50, 3.75, 4.00].map((val) => {
-              const y = 360 - ((val - 2.50) / 1.50) * 320;
+              const y = 430 - ((val - 2.50) / 1.50) * 360;
               return (
                 <g key={val}>
-                  <line x1="75" y1={y} x2="760" y2={y} stroke="#E5E7EB" strokeWidth="1" />
+                  <line x1="75" y1={y} x2="840" y2={y} stroke="#E5E7EB" strokeWidth="1" />
                   <text x="68" y={y + 4} textAnchor="end" fontSize="11" fontWeight="800" fill="#4B5563">{val.toFixed(2)}</text>
                 </g>
               );
@@ -382,25 +449,25 @@ function AnalyticsView({ students }) {
 
             {/* Vertical Gridlines & X-Axis Ticks (70% to 100%) */}
             {[70, 75, 80, 85, 90, 95, 100].map((val) => {
-              const x = 80 + ((val - 70) / 30) * 680;
+              const x = 80 + ((val - 70) / 30) * 760;
               return (
                 <g key={val}>
-                  <line x1={x} y1="40" x2={x} y2="365" stroke="#E5E7EB" strokeWidth="1" />
-                  <text x={x} y="385" textAnchor="middle" fontSize="11" fontWeight="800" fill="#4B5563">{val}%</text>
+                  <line x1={x} y1="55" x2={x} y2="435" stroke="#E5E7EB" strokeWidth="1" />
+                  <text x={x} y="452" textAnchor="middle" fontSize="11" fontWeight="800" fill="#4B5563">{val}%</text>
                 </g>
               );
             })}
 
             {/* Axis Labels */}
-            <text x="420" y="410" textAnchor="middle" fontSize="12" fontWeight="900" fill="#1B1B1B">
+            <text x="460" y="485" textAnchor="middle" fontSize="13" fontWeight="900" fill="#1B1B1B">
               STUDENT ATTENDANCE RATE (%)
             </text>
             <text
               transform="rotate(-90)"
-              x="-200"
-              y="24"
+              x="-245"
+              y="22"
               textAnchor="middle"
-              fontSize="12"
+              fontSize="13"
               fontWeight="900"
               fill="#1B1B1B"
             >
@@ -412,9 +479,9 @@ function AnalyticsView({ students }) {
               <g>
                 <line
                   x1="80"
-                  y1={360 - ((trendline.yAt70 - 2.50) / 1.50) * 320}
-                  x2="760"
-                  y2={360 - ((trendline.yAt100 - 2.50) / 1.50) * 320}
+                  y1={430 - ((trendline.yAt70 - 2.50) / 1.50) * 360}
+                  x2="840"
+                  y2={430 - ((trendline.yAt100 - 2.50) / 1.50) * 360}
                   stroke="#7C3AED"
                   strokeWidth="3.5"
                   strokeDasharray="8 5"
@@ -422,29 +489,26 @@ function AnalyticsView({ students }) {
               </g>
             )}
 
-            {/* Non-congested, Cleanly Spaced Scatter Points */}
+            {/* Scatter Points Colored by Program */}
             {scatterFilteredStudents.map((student) => {
               const { x, y } = mapScatterCoords(student.attendance, student.gpa);
               const isSelected = hoveredPoint && hoveredPoint.id === student.id;
 
-              // Color node based on GPA tier
-              let pointColor = '#00FFAE';
-              if (student.gpa >= 3.8) pointColor = '#FFE600';
-              else if (student.gpa >= 3.4) pointColor = '#00BFFF';
-              else if (student.gpa < 3.0) pointColor = '#FF6F61';
+              // Color node based on Allocated Department Color
+              const pointColor = departmentColors[student.department] || '#2563EB';
 
               return (
                 <circle
                   key={student.id}
                   cx={x}
                   cy={y}
-                  r={isSelected ? "8.5" : "5.5"}
+                  r={isSelected ? "9" : "6"}
                   fill={pointColor}
                   stroke="#1B1B1B"
                   strokeWidth={isSelected ? "3" : "2"}
                   style={{
                     cursor: 'pointer',
-                    filter: isSelected ? 'drop-shadow(3px 3px 0px #1B1B1B)' : 'drop-shadow(1px 1px 0px rgba(0,0,0,0.5))',
+                    filter: isSelected ? 'drop-shadow(3px 3px 0px #1B1B1B)' : 'drop-shadow(1px 1px 0px rgba(0,0,0,0.4))',
                     transition: 'r 0.15s ease'
                   }}
                   onMouseEnter={() => setHoveredPoint(student)}
@@ -466,21 +530,27 @@ function AnalyticsView({ students }) {
                 />
                 <div className="detail-identity-wrap">
                   <h4 className="detail-student-name">{hoveredPoint.name}</h4>
-                  <span className="detail-student-id">{hoveredPoint.studentId} • {hoveredPoint.department}</span>
+                  <div className="detail-dept-badge-row">
+                    <span
+                      className="dept-color-indicator-dot"
+                      style={{ backgroundColor: departmentColors[hoveredPoint.department] || '#2563EB' }}
+                    ></span>
+                    <span className="detail-student-id">{hoveredPoint.department}</span>
+                  </div>
                 </div>
               </div>
               <div className="detail-metrics-row">
                 <div className="detail-metric-chip">
                   <span>GPA:</span>
-                  <strong className={hoveredPoint.gpa >= 3.5 ? 'text-amber' : ''}>{Number(hoveredPoint.gpa).toFixed(2)}</strong>
+                  <strong>{Number(hoveredPoint.gpa).toFixed(2)}</strong>
                 </div>
                 <div className="detail-metric-chip">
                   <span>Attendance:</span>
                   <strong>{hoveredPoint.attendance || 0}%</strong>
                 </div>
                 <div className="detail-metric-chip">
-                  <span>Status:</span>
-                  <strong>{hoveredPoint.status}</strong>
+                  <span>ID:</span>
+                  <strong>{hoveredPoint.studentId}</strong>
                 </div>
               </div>
             </div>
@@ -505,7 +575,7 @@ function AnalyticsView({ students }) {
               <div key={dept.name} className="dept-benchmark-row">
                 <div className="dept-benchmark-info">
                   <div className="dept-info-left">
-                    <span className="dept-rank-pill">#{index + 1}</span>
+                    <span className="dept-rank-pill" style={{ backgroundColor: dept.color }}>#{index + 1}</span>
                     <span className="dept-title-text">{dept.name}</span>
                   </div>
                   <div className="dept-info-right">
