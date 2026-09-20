@@ -398,7 +398,7 @@ function AnalyticsView({ students }) {
 
         {/* Scatter Plot SVG Container (BIGGER 900x520 CANVAS) */}
         <div className="scatter-svg-wrapper">
-          <svg viewBox="0 0 900 520" className="interactive-chart-svg">
+          <svg viewBox="0 0 900 550" className="interactive-chart-svg">
             {/* Top-Right Quadrant Background: High Achievers */}
             <rect x="536" y="65" width="304" height="161" fill="#00FFAE" fillOpacity="0.08" rx="10" />
 
@@ -419,22 +419,14 @@ function AnalyticsView({ students }) {
 
             {/* Bottom-Left Quadrant Background: Academic Support Zone */}
             <rect x="80" y="226" width="456" height="204" fill="#FF6F61" fillOpacity="0.07" rx="10" />
-            <rect x="90" y="234" width="310" height="22" rx="5" fill="#FFE5E5" stroke="#DC2626" strokeWidth="1" />
-            <text x="245" y="249" textAnchor="middle" fontSize="10" fontWeight="900" fill="#DC2626" letterSpacing="0.3">
-              ACADEMIC SUPPORT FOCUS (Att &lt;88%, GPA &lt;3.35)
-            </text>
 
             {/* Bottom-Right Quadrant Background: Dedicated Effort */}
             <rect x="536" y="226" width="304" height="204" fill="#FFE600" fillOpacity="0.06" rx="10" />
-            <rect x="550" y="234" width="280" height="22" rx="5" fill="#FFF8E7" stroke="#B45309" strokeWidth="1" />
-            <text x="690" y="249" textAnchor="middle" fontSize="10" fontWeight="900" fill="#B45309" letterSpacing="0.3">
-              DEDICATED EFFORT (Att ≥88%, GPA &lt;3.35)
-            </text>
 
             {/* Quadrant Dividing Lines (Actual Means: 88% and 3.35) */}
             <line x1="536" y1="55" x2="536" y2="430" stroke="#9CA3AF" strokeWidth="2" strokeDasharray="5 5" />
-            <rect x="490" y="58" width="92" height="18" rx="4" fill="#F3F4F6" stroke="#9CA3AF" strokeWidth="1" />
-            <text x="536" y="71" textAnchor="middle" fontSize="9" fontWeight="900" fill="#374151">Mean Att: 88%</text>
+            <rect x="490" y="56" width="92" height="18" rx="4" fill="#F3F4F6" stroke="#9CA3AF" strokeWidth="1" />
+            <text x="536" y="69" textAnchor="middle" fontSize="9" fontWeight="900" fill="#374151">Mean Att: 88%</text>
 
             <line x1="80" y1="226" x2="840" y2="226" stroke="#9CA3AF" strokeWidth="2" strokeDasharray="5 5" />
             <text x="40" y="230" fontSize="11" fontWeight="900" fill="#374151">3.35</text>
@@ -462,7 +454,7 @@ function AnalyticsView({ students }) {
             })}
 
             {/* Axis Labels */}
-            <text x="460" y="485" textAnchor="middle" fontSize="13" fontWeight="900" fill="#1B1B1B">
+            <text x="460" y="478" textAnchor="middle" fontSize="13" fontWeight="900" fill="#1B1B1B">
               STUDENT ATTENDANCE RATE (%)
             </text>
             <text
@@ -475,6 +467,17 @@ function AnalyticsView({ students }) {
               fill="#1B1B1B"
             >
               CUMULATIVE GPA (2.50 – 4.00)
+            </text>
+
+            {/* Bottom Quadrant Overview Badges (Positioned cleanly below X-axis title - ZERO trendline or dot collisions) */}
+            <rect x="80" y="498" width="350" height="32" rx="8" fill="#FFE5E5" stroke="#DC2626" strokeWidth="2" />
+            <text x="255" y="519" textAnchor="middle" fontSize="11" fontWeight="900" fill="#DC2626" letterSpacing="0.3">
+              ACADEMIC SUPPORT FOCUS (Att &lt;88%, GPA &lt;3.35)
+            </text>
+
+            <rect x="490" y="498" width="350" height="32" rx="8" fill="#FFF8E7" stroke="#B45309" strokeWidth="2" />
+            <text x="665" y="519" textAnchor="middle" fontSize="11" fontWeight="900" fill="#B45309" letterSpacing="0.3">
+              DEDICATED EFFORT (Att ≥88%, GPA &lt;3.35)
             </text>
 
             {/* Accurate Linear Regression Trendline */}
