@@ -35,20 +35,43 @@ function DepartmentsView({ students, onSelectDepartment }) {
     };
   });
 
+  // Calculate top performing departments
+  const topGpaDept = [...departmentStats].sort((a, b) => b.avgGpa - a.avgGpa)[0];
+  const mostHonorsDept = [...departmentStats].sort((a, b) => b.deansCount - a.deansCount)[0];
+
   return (
     <div className="departments-view-wrapper" id="departments-view">
       {/* Header Banner */}
       <div className="departments-header-banner">
         <div className="departments-header-title-group">
           <div className="departments-icon-badge">
-            <BookOpenIcon size={24} />
+            <BookOpenIcon size={26} />
           </div>
           <div>
-            <h1 className="departments-main-title">Academic Departments Directory</h1>
+            <h1 className="departments-main-title">Academic Departments &amp; Degree Programs</h1>
             <p className="departments-main-subtitle">
-              Comprehensive breakdown across all 10 specialized degree programs, enrollment distribution, and performance.
+              Comprehensive breakdown across all 10 specialized academic faculties, enrollment capacity, and honors distribution.
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* Top 3 Department Highlights */}
+      <div className="analytics-summary-cards">
+        <div className="summary-stat-box accent-cyan">
+          <span className="summary-stat-label">Academic Departments</span>
+          <span className="summary-stat-val">{departments.length} Faculties</span>
+          <span className="summary-stat-sub">Across STEM, Humanities &amp; Design</span>
+        </div>
+        <div className="summary-stat-box accent-amber">
+          <span className="summary-stat-label">Highest Academic GPA</span>
+          <span className="summary-stat-val">{topGpaDept ? topGpaDept.name : 'N/A'}</span>
+          <span className="summary-stat-sub">{topGpaDept ? `${topGpaDept.avgGpa.toFixed(2)} Institutional Mean` : ''}</span>
+        </div>
+        <div className="summary-stat-box accent-emerald">
+          <span className="summary-stat-label">Dean's Honors Leader</span>
+          <span className="summary-stat-val">{mostHonorsDept ? mostHonorsDept.name : 'N/A'}</span>
+          <span className="summary-stat-sub">{mostHonorsDept ? `${mostHonorsDept.deansCount} Scholars on Dean's List` : ''}</span>
         </div>
       </div>
 

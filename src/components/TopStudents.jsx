@@ -5,12 +5,12 @@ function TopStudents({ students, onSelectStudent }) {
     .sort((a, b) => (b.gpa - a.gpa) || (b.attendance - a.attendance) || (b.credits - a.credits))
     .slice(0, 5);
 
-  const separatorColors = [
-    '#FBE4D8',
-    '#DFB6B2',
-    '#854F6C',
-    '#522B5B',
-    '#2B124C'
+  const honorBadges = [
+    { bg: '#FFE600', color: '#1B1B1B', label: '#1 Top Scholar', line: '#FFE600' },
+    { bg: '#00FFAE', color: '#1B1B1B', label: '#2 High Honor', line: '#00FFAE' },
+    { bg: '#00BFFF', color: '#1B1B1B', label: '#3 Dean\'s Merit', line: '#00BFFF' },
+    { bg: '#FF70A6', color: '#1B1B1B', label: '#4 Distinction', line: '#FF70A6' },
+    { bg: '#FFD166', color: '#1B1B1B', label: '#5 Honor Roll', line: '#FFD166' }
   ];
 
   if (topStudents.length === 0) return null;
@@ -28,13 +28,13 @@ function TopStudents({ students, onSelectStudent }) {
           </div>
         </div>
         <div className="showcase-hint-pill">
-          <span>Interactive 3D Neobrutalist Cards</span>
+          <span>Official Dean's List Spotlight</span>
         </div>
       </div>
 
       <div className="creationsBlocUl">
         {topStudents.map((student, index) => {
-          const sepColor = separatorColors[index] || '#854F6C';
+          const badge = honorBadges[index] || { bg: '#FFE600', color: '#1B1B1B', label: `#${index + 1} Honor`, line: '#FFE600' };
           const initials = student.initials || (student.name ? student.name.slice(0, 2).toUpperCase() : 'ST');
           return (
             <figure
@@ -46,8 +46,8 @@ function TopStudents({ students, onSelectStudent }) {
             >
               {/* Header Rank & GPA */}
               <div className="card-prez-header">
-                <span className="card-rank-badge" style={{ backgroundColor: sepColor, color: '#190019' }}>
-                  #{index + 1} Honor
+                <span className="card-rank-badge" style={{ backgroundColor: badge.bg, color: badge.color }}>
+                  {badge.label}
                 </span>
                 <span className="card-gpa-badge">
                   {Number(student.gpa).toFixed(2)} GPA
@@ -55,7 +55,7 @@ function TopStudents({ students, onSelectStudent }) {
               </div>
 
               {/* Line separator */}
-              <div className="lineSeparator"></div>
+              <div className="lineSeparator" style={{ backgroundColor: badge.line }}></div>
 
               {/* Student Avatar Image */}
               <div className="blocImg">

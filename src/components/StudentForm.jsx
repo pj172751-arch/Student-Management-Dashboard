@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { departments, boyAvatars, girlAvatars } from '../data/students';
-import { CloseIcon, CheckCircleIcon, AcademicCap, AlertCircleIcon } from './Icons';
+import { CloseIcon, CheckCircleIcon, AcademicCap, AlertCircleIcon, UsersIcon } from './Icons';
 
 function StudentForm({ student, onSubmit, onClose, existingEmails }) {
   const [formData, setFormData] = useState({
@@ -18,8 +18,22 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
     initials: student?.initials || ''
   });
 
+  const [avatarCategory, setAvatarCategory] = useState('all'); // 'all' | 'boys' | 'girls'
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
+
+  const allAvatars = useMemo(() => {
+    return [
+      ...boyAvatars.map((url, idx) => ({ url, type: 'boy', label: `Boy #${idx + 1}` })),
+      ...girlAvatars.map((url, idx) => ({ url, type: 'girl', label: `Girl #${idx + 1}` }))
+    ];
+  }, []);
+
+  const visibleAvatars = useMemo(() => {
+    if (avatarCategory === 'boys') return allAvatars.filter(a => a.type === 'boy');
+    if (avatarCategory === 'girls') return allAvatars.filter(a => a.type === 'girl');
+    return allAvatars;
+  }, [avatarCategory, allAvatars]);
 
   const validateField = (name, value) => {
     switch (name) {
@@ -118,239 +132,313 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content glass-strong" onClick={(e) => e.stopPropagation()} id="student-form-modal">
+      <div
+        className="modal-content neobrutal-modal"
+        onClick={(e) => e.stopPropagation()}
+        id="student-form-modal"
+      >
         {/* Modal Header */}
         <div className="modal-header">
           <div className="modal-title-group">
             <div className="modal-header-badge">
-              <AcademicCap size={20} />
+              <AcademicCap size={22} />
             </div>
             <div>
               <h2 className="modal-title">{isEditing ? 'Edit Student Record' : 'Enroll New Student'}</h2>
               <p className="modal-subtitle">
-                {isEditing ? `Updating academic registry for ${student.name}` : 'Enter student credentials and academic enrollment information'}
+                {isEditing
+                  ? `Modifying registry for student #${formData.studentId || student?.id}`
+                  : 'Complete academic profile credentials and choose student avatar'}
               </p>
             </div>
           </div>
-          <button className="modal-close-btn" onClick={onClose} title="Close window" id="modal-close-btn">
-            <CloseIcon size={16} />
+          <button
+            type="button"
+            className="modal-close-btn"
+            onClick={onClose}
+            title="Close dialog"
+            id="modal-close-btn"
+          >
+            <CloseIcon size={18} />
           </button>
         </div>
 
-        {/* Modal Form */}
+        {/* Modal Form Body */}
         <form onSubmit={handleSubmit} className="student-modal-form" noValidate>
-          <div className="form-grid-layout">
-            {/* Full Name */}
-            <div className="form-input-group full-width">
-              <label className="form-label">Full Legal Name</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="e.g., Aarav Sharma or Aadhya Sharma"
-                className={`form-text-input ${errors.name && touched.name ? 'input-error' : ''}`}
-                id="input-student-name"
-              />
-              {errors.name && touched.name && (
-                <div className="field-error-text">
-                  <AlertCircleIcon size={12} />
-                  <span>{errors.name}</span>
-                </div>
-              )}
+          {/* SECTION 1: Personal Credentials & Avatar Preview */}
+          <div className="form-section-card">
+            <div className="section-card-title-row">
+              <span className="section-number-tag">01</span>
+              <h3 className="section-card-heading">Student Identity & Illustrated Avatar</h3>
             </div>
 
-            {/* Email */}
-            <div className="form-input-group full-width">
-              <label className="form-label">Institutional Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="e.g., aarav.sharma@university.edu"
-                className={`form-text-input ${errors.email && touched.email ? 'input-error' : ''}`}
-                id="input-student-email"
-              />
-              {errors.email && touched.email && (
-                <div className="field-error-text">
-                  <AlertCircleIcon size={12} />
-                  <span>{errors.email}</span>
+            <div className="identity-preview-row">
+              {/* Selected Avatar Large Display */}
+              <div className="avatar-selected-preview-card">
+                <div className="selected-avatar-frame">
+                  <img src={formData.avatar} alt="Selected Avatar" />
                 </div>
-              )}
-            </div>
+                <div className="selected-avatar-label">
+                  <span className="selected-avatar-title">Selected Avatar</span>
+                  <span className="selected-avatar-id">{formData.studentId || 'New Student'}</span>
+                </div>
+              </div>
 
-            {/* Avatar Selector */}
-            <div className="form-input-group full-width">
-              <label className="form-label">Select Illustrated Avatar</label>
-              <div className="avatar-selection-scroll">
-                <div className="avatar-picker-group">
-                  <span className="picker-sublabel">Boy Avatars</span>
-                  <div className="avatar-options-row">
-                    {boyAvatars.map((av, idx) => (
-                      <button
-                        type="button"
-                        key={`boy-${idx}`}
-                        className={`avatar-option-btn ${formData.avatar === av ? 'selected' : ''}`}
-                        onClick={() => setFormData(prev => ({ ...prev, avatar: av }))}
-                        title={`Boy Avatar ${idx + 1}`}
-                      >
-                        <img src={av} alt={`Boy ${idx + 1}`} />
-                      </button>
-                    ))}
-                  </div>
+              {/* Name & Email inputs */}
+              <div className="identity-inputs-column">
+                <div className="form-input-group">
+                  <label className="form-label" htmlFor="input-student-name">
+                    Full Legal Name <span className="required-star">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="e.g., Aarav Sharma"
+                    className={`form-input-control ${errors.name && touched.name ? 'input-error' : ''}`}
+                    id="input-student-name"
+                  />
+                  {errors.name && touched.name && (
+                    <div className="field-error-text">
+                      <AlertCircleIcon size={13} />
+                      <span>{errors.name}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="avatar-picker-group">
-                  <span className="picker-sublabel">Girl Avatars</span>
-                  <div className="avatar-options-row">
-                    {girlAvatars.map((av, idx) => (
-                      <button
-                        type="button"
-                        key={`girl-${idx}`}
-                        className={`avatar-option-btn ${formData.avatar === av ? 'selected' : ''}`}
-                        onClick={() => setFormData(prev => ({ ...prev, avatar: av }))}
-                        title={`Girl Avatar ${idx + 1}`}
-                      >
-                        <img src={av} alt={`Girl ${idx + 1}`} />
-                      </button>
-                    ))}
-                  </div>
+
+                <div className="form-input-group">
+                  <label className="form-label" htmlFor="input-student-email">
+                    Institutional Email Address <span className="required-star">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="e.g., aarav.sharma@university.edu"
+                    className={`form-input-control ${errors.email && touched.email ? 'input-error' : ''}`}
+                    id="input-student-email"
+                  />
+                  {errors.email && touched.email && (
+                    <div className="field-error-text">
+                      <AlertCircleIcon size={13} />
+                      <span>{errors.email}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Department */}
-            <div className="form-input-group">
-              <label className="form-label">Academic Department</label>
-              <select
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className="form-select-input"
-                id="select-student-dept"
-              >
-                {departments.map((dept) => (
-                  <option key={dept} value={dept}>
-                    {dept}
-                  </option>
+            {/* Avatar Gallery with Gender Category Pills */}
+            <div className="avatar-picker-wrapper">
+              <div className="avatar-picker-controls-header">
+                <label className="form-label-inline">Select Avatar Character ({visibleAvatars.length})</label>
+                <div className="category-toggle-pills">
+                  <button
+                    type="button"
+                    className={`cat-pill-btn ${avatarCategory === 'all' ? 'active' : ''}`}
+                    onClick={() => setAvatarCategory('all')}
+                  >
+                    All (40)
+                  </button>
+                  <button
+                    type="button"
+                    className={`cat-pill-btn ${avatarCategory === 'boys' ? 'active' : ''}`}
+                    onClick={() => setAvatarCategory('boys')}
+                  >
+                    Boys (20)
+                  </button>
+                  <button
+                    type="button"
+                    className={`cat-pill-btn ${avatarCategory === 'girls' ? 'active' : ''}`}
+                    onClick={() => setAvatarCategory('girls')}
+                  >
+                    Girls (20)
+                  </button>
+                </div>
+              </div>
+
+              <div className="avatar-selection-grid">
+                {visibleAvatars.map((item, idx) => (
+                  <button
+                    type="button"
+                    key={`${item.type}-${idx}`}
+                    className={`avatar-grid-item ${formData.avatar === item.url ? 'is-selected' : ''}`}
+                    onClick={() => setFormData(prev => ({ ...prev, avatar: item.url }))}
+                    title={item.label}
+                  >
+                    <img src={item.url} alt={item.label} />
+                    {formData.avatar === item.url && (
+                      <div className="avatar-selected-badge">✓</div>
+                    )}
+                  </button>
                 ))}
-              </select>
-            </div>
-
-            {/* Status */}
-            <div className="form-input-group">
-              <label className="form-label">Academic Standing Status</label>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                className="form-select-input"
-                id="select-student-status"
-              >
-                <option value="Active">Active (Good Standing)</option>
-                <option value="Inactive">Inactive (Suspended/Withdrawn)</option>
-              </select>
-            </div>
-
-            {/* GPA */}
-            <div className="form-input-group">
-              <label className="form-label">Cumulative GPA (Scale: 4.00 Max)</label>
-              <input
-                type="number"
-                name="gpa"
-                value={formData.gpa}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                step="0.01"
-                min="0"
-                max="4.0"
-                placeholder="3.75"
-                className={`form-text-input ${errors.gpa && touched.gpa ? 'input-error' : ''}`}
-                id="input-student-gpa"
-              />
-              {errors.gpa && touched.gpa && (
-                <div className="field-error-text">
-                  <AlertCircleIcon size={12} />
-                  <span>{errors.gpa}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Enrollment Date */}
-            <div className="form-input-group">
-              <label className="form-label">Enrollment Date</label>
-              <input
-                type="date"
-                name="enrollmentDate"
-                value={formData.enrollmentDate}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={`form-text-input ${errors.enrollmentDate && touched.enrollmentDate ? 'input-error' : ''}`}
-                id="input-student-date"
-              />
-              {errors.enrollmentDate && touched.enrollmentDate && (
-                <div className="field-error-text">
-                  <AlertCircleIcon size={12} />
-                  <span>{errors.enrollmentDate}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Credits */}
-            <div className="form-input-group">
-              <label className="form-label">Earned Credits</label>
-              <input
-                type="number"
-                name="credits"
-                value={formData.credits}
-                onChange={handleChange}
-                min="0"
-                max="160"
-                placeholder="60"
-                className="form-text-input"
-                id="input-student-credits"
-              />
-            </div>
-
-            {/* Attendance */}
-            <div className="form-input-group">
-              <label className="form-label">Attendance Rate (%)</label>
-              <input
-                type="number"
-                name="attendance"
-                value={formData.attendance}
-                onChange={handleChange}
-                min="0"
-                max="100"
-                placeholder="90"
-                className="form-text-input"
-                id="input-student-attendance"
-              />
-            </div>
-
-            {/* Skills */}
-            <div className="form-input-group full-width">
-              <label className="form-label">Academic Skills (Comma separated)</label>
-              <input
-                type="text"
-                name="skills"
-                value={formData.skills}
-                onChange={handleChange}
-                placeholder="e.g., Fullstack Dev, AI & ML, Algorithms"
-                className="form-text-input"
-                id="input-student-skills"
-              />
+              </div>
             </div>
           </div>
 
-          {/* Form Actions */}
+          {/* SECTION 2: Academic Program & Standing */}
+          <div className="form-section-card">
+            <div className="section-card-title-row">
+              <span className="section-number-tag tag-blue">02</span>
+              <h3 className="section-card-heading">Academic Department & Performance Standing</h3>
+            </div>
+
+            <div className="form-grid-2col">
+              <div className="form-input-group">
+                <label className="form-label" htmlFor="select-student-dept">
+                  Academic Department <span className="required-star">*</span>
+                </label>
+                <select
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className="form-select-control"
+                  id="select-student-dept"
+                >
+                  {departments.map((dept) => (
+                    <option key={dept} value={dept}>
+                      {dept}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-input-group">
+                <label className="form-label" htmlFor="select-student-status">
+                  Enrollment Status <span className="required-star">*</span>
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="form-select-control"
+                  id="select-student-status"
+                >
+                  <option value="Active">Active (Good Standing)</option>
+                  <option value="Inactive">Inactive (Withdrawn / Suspended)</option>
+                </select>
+              </div>
+
+              <div className="form-input-group">
+                <label className="form-label" htmlFor="input-student-gpa">
+                  Cumulative GPA (0.00 – 4.00) <span className="required-star">*</span>
+                </label>
+                <div className="gpa-input-wrapper">
+                  <input
+                    type="number"
+                    name="gpa"
+                    value={formData.gpa}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    step="0.01"
+                    min="0"
+                    max="4.0"
+                    placeholder="3.75"
+                    className={`form-input-control ${errors.gpa && touched.gpa ? 'input-error' : ''}`}
+                    id="input-student-gpa"
+                  />
+                  <span className="gpa-scale-addon">/ 4.00</span>
+                </div>
+                {errors.gpa && touched.gpa && (
+                  <div className="field-error-text">
+                    <AlertCircleIcon size={13} />
+                    <span>{errors.gpa}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="form-input-group">
+                <label className="form-label" htmlFor="input-student-date">
+                  Enrollment Date <span className="required-star">*</span>
+                </label>
+                <input
+                  type="date"
+                  name="enrollmentDate"
+                  value={formData.enrollmentDate}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={`form-input-control ${errors.enrollmentDate && touched.enrollmentDate ? 'input-error' : ''}`}
+                  id="input-student-date"
+                />
+                {errors.enrollmentDate && touched.enrollmentDate && (
+                  <div className="field-error-text">
+                    <AlertCircleIcon size={13} />
+                    <span>{errors.enrollmentDate}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 3: Credits, Attendance & Skills */}
+          <div className="form-section-card">
+            <div className="section-card-title-row">
+              <span className="section-number-tag tag-pink">03</span>
+              <h3 className="section-card-heading">Credits, Attendance & Core Skills</h3>
+            </div>
+
+            <div className="form-grid-2col">
+              <div className="form-input-group">
+                <label className="form-label" htmlFor="input-student-credits">
+                  Earned Academic Credits
+                </label>
+                <input
+                  type="number"
+                  name="credits"
+                  value={formData.credits}
+                  onChange={handleChange}
+                  min="0"
+                  max="200"
+                  placeholder="60"
+                  className="form-input-control"
+                  id="input-student-credits"
+                />
+              </div>
+
+              <div className="form-input-group">
+                <label className="form-label" htmlFor="input-student-attendance">
+                  Attendance Rate (%)
+                </label>
+                <input
+                  type="number"
+                  name="attendance"
+                  value={formData.attendance}
+                  onChange={handleChange}
+                  min="0"
+                  max="100"
+                  placeholder="92"
+                  className="form-input-control"
+                  id="input-student-attendance"
+                />
+              </div>
+
+              <div className="form-input-group full-width-grid">
+                <label className="form-label" htmlFor="input-student-skills">
+                  Academic Skills & Focus Areas (Comma separated)
+                </label>
+                <input
+                  type="text"
+                  name="skills"
+                  value={formData.skills}
+                  onChange={handleChange}
+                  placeholder="e.g., Python, Cloud Computing, Neural Networks"
+                  className="form-input-control"
+                  id="input-student-skills"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Modal Actions Footer */}
           <div className="modal-actions-footer">
             <button
               type="button"
-              className="btn-secondary"
+              className="modal-btn-cancel"
               onClick={onClose}
               id="form-cancel-btn"
             >
@@ -358,10 +446,10 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
             </button>
             <button
               type="submit"
-              className="btn-primary"
+              className="modal-btn-submit"
               id="form-submit-btn"
             >
-              <CheckCircleIcon size={16} />
+              <CheckCircleIcon size={18} />
               <span>{isEditing ? 'Save Changes' : 'Enroll Student'}</span>
             </button>
           </div>

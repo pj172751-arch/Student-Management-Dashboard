@@ -15,6 +15,7 @@ import Toast from './components/Toast';
 import SettingsPage from './components/SettingsPage';
 import DepartmentsView from './components/DepartmentsView';
 import AnalyticsView from './components/AnalyticsView';
+import { PlusIcon, AnalyticsIcon, BookOpenIcon, AwardIcon } from './components/Icons';
 
 function App() {
   const [students, setStudents] = useState(initialStudents);
@@ -250,6 +251,46 @@ function App() {
           {/* SECTION: DASHBOARD (Overview with Stats, Top 5 & Directory) */}
           {activeSection === 'dashboard' && (
             <>
+              {/* Hero Welcome Banner */}
+              <div className="dashboard-welcome-banner" id="dashboard-welcome-banner">
+                <div className="welcome-text-group">
+                  <div className="welcome-badge-tag">Academic Term 2024–2025 • Active Session</div>
+                  <h1 className="welcome-heading">Metropolitan University Registry</h1>
+                  <p className="welcome-subheading">
+                    Real-time scholar tracking, grade performance metrics, and enrollment administration for {students.length} students.
+                  </p>
+                </div>
+                <div className="welcome-actions-row">
+                  <button
+                    type="button"
+                    className="welcome-action-btn btn-primary-enroll"
+                    onClick={handleAddStudent}
+                    id="welcome-btn-enroll"
+                  >
+                    <PlusIcon size={16} />
+                    <span>Enroll Student</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="welcome-action-btn btn-secondary-analytics"
+                    onClick={() => setActiveSection('analytics')}
+                    id="welcome-btn-analytics"
+                  >
+                    <AnalyticsIcon size={16} />
+                    <span>View Analytics</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="welcome-action-btn btn-secondary-backup"
+                    onClick={() => setActiveSection('departments')}
+                    id="welcome-btn-departments"
+                  >
+                    <BookOpenIcon size={16} />
+                    <span>Departments</span>
+                  </button>
+                </div>
+              </div>
+
               {/* Real-time KPI Stats Row */}
               <StatsPanel students={students} />
 
@@ -258,6 +299,48 @@ function App() {
                 students={students}
                 onSelectStudent={handleEditStudent}
               />
+
+              {/* Quick Filter Buttons */}
+              <div className="directory-quick-filters">
+                <span className="dir-quick-label">Fast Filters:</span>
+                <button
+                  type="button"
+                  className={`dir-filter-pill-btn ${!filters.gpaMin && !filters.status ? 'active' : ''}`}
+                  onClick={() => handleFilterChange('clear', '')}
+                >
+                  All ({students.length})
+                </button>
+                <button
+                  type="button"
+                  className={`dir-filter-pill-btn ${filters.gpaMin === '3.8' ? 'active' : ''}`}
+                  onClick={() => {
+                    setFilters(prev => ({ ...prev, gpaMin: '3.8', gpaMax: '', status: '' }));
+                    setCurrentPage(1);
+                  }}
+                >
+                  Dean's List (≥3.8)
+                </button>
+                <button
+                  type="button"
+                  className={`dir-filter-pill-btn ${filters.gpaMin === '3.5' && filters.gpaMax === '3.8' ? 'active' : ''}`}
+                  onClick={() => {
+                    setFilters(prev => ({ ...prev, gpaMin: '3.5', gpaMax: '3.8', status: '' }));
+                    setCurrentPage(1);
+                  }}
+                >
+                  Honors (3.5–3.79)
+                </button>
+                <button
+                  type="button"
+                  className={`dir-filter-pill-btn ${filters.status === 'Active' ? 'active' : ''}`}
+                  onClick={() => {
+                    setFilters(prev => ({ ...prev, status: 'Active', gpaMin: '', gpaMax: '' }));
+                    setCurrentPage(1);
+                  }}
+                >
+                  Active Standing
+                </button>
+              </div>
 
               {/* Search, Filter & View Controls */}
               <SearchFilter
