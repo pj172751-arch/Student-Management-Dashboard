@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* ========================================================
+     ENERGETIC VIBRANT NEOBRUTALISM PALETTE (LIGHT BACKGROUND)
+     Selected from user palette:
+       #F1FAEE (Clean off-white cream background)
+       #FFFFFF (Card & surface base)
+       #00BFFF (Vibrant Cyan Blue - links, stats, secondary)
+       #FF6F61 (Coral Salmon - primary action buttons, accents)
+       #FFD700 (Golden Yellow - badges, highlight tags)
+       #00FFAE (Neon Mint Green - active status, attendance)
+       #FF4081 (Neon Rose Pink - alerts, warnings)
+       #4B0082 / #1B1B1B (Deep ink black - borders & text)
+     ======================================================== */
+  --bg-canvas: #F1FAEE;
+  --bg-surface: #FFFFFF;
+  --text-main: #1B1B1B;
+  --text-muted: #555555;
+  --border-neobrutal: 2.5px solid #1B1B1B;
+  --shadow-neobrutal: 4px 4px 0px #1B1B1B;
+  --shadow-neobrutal-hover: 6px 6px 0px #1B1B1B;
+  --shadow-neobrutal-active: 1px 1px 0px #1B1B1B;
+
+  /* Vibrant Neobrutal Accents */
+  --neo-blue: #00BFFF;
+  --neo-coral: #FF6F61;
+  --neo-yellow: #FFD700;
+  --neo-green: #00FFAE;
+  --neo-pink: #FF4081;
+  --neo-purple: #8A2BE2;
+  --neo-dark: #1B1B1B;
+
+  /* 3D Showcase Perspective Variables */
+  --sizeCreaBlock: 260px;
+  --bgCreaBlock: #FFFFFF;
+  --blockTranslateX: 180px;
+  --blockRotateY: 36deg;
+  --marginSize: 34px;
+  --shadowColor: 6px 6px 0px #1B1B1B;
+  --blocImgSize: 180px;
+
+  /* Separator Bar Colors */
+  --arc-1: #FF6F61;
+  --arc-2: #00BFFF;
+  --arc-3: #FFD700;
+  --arc-4: #00FFAE;
+  --arc-5: #FF4081;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-canvas);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--neo-blue);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
