@@ -419,19 +419,22 @@ function AnalyticsView({ students }) {
 
             {/* Bottom-Left Quadrant Background: Academic Support Zone */}
             <rect x="80" y="226" width="456" height="204" fill="#FF6F61" fillOpacity="0.07" rx="10" />
-            <text x="95" y="455" fontSize="11" fontWeight="900" fill="#DC2626" letterSpacing="0.4">
-              ACADEMIC SUPPORT ZONE (Att &lt;88%, GPA &lt;3.35)
+            <rect x="90" y="234" width="310" height="22" rx="5" fill="#FFE5E5" stroke="#DC2626" strokeWidth="1" />
+            <text x="245" y="249" textAnchor="middle" fontSize="10" fontWeight="900" fill="#DC2626" letterSpacing="0.3">
+              ACADEMIC SUPPORT FOCUS (Att &lt;88%, GPA &lt;3.35)
             </text>
 
             {/* Bottom-Right Quadrant Background: Dedicated Effort */}
             <rect x="536" y="226" width="304" height="204" fill="#FFE600" fillOpacity="0.06" rx="10" />
-            <text x="830" y="455" textAnchor="end" fontSize="11" fontWeight="900" fill="#B45309" letterSpacing="0.4">
+            <rect x="550" y="234" width="280" height="22" rx="5" fill="#FFF8E7" stroke="#B45309" strokeWidth="1" />
+            <text x="690" y="249" textAnchor="middle" fontSize="10" fontWeight="900" fill="#B45309" letterSpacing="0.3">
               DEDICATED EFFORT (Att ≥88%, GPA &lt;3.35)
             </text>
 
             {/* Quadrant Dividing Lines (Actual Means: 88% and 3.35) */}
             <line x1="536" y1="55" x2="536" y2="430" stroke="#9CA3AF" strokeWidth="2" strokeDasharray="5 5" />
-            <text x="542" y="445" fontSize="10" fontWeight="900" fill="#374151">Mean Att (88%)</text>
+            <rect x="490" y="58" width="92" height="18" rx="4" fill="#F3F4F6" stroke="#9CA3AF" strokeWidth="1" />
+            <text x="536" y="71" textAnchor="middle" fontSize="9" fontWeight="900" fill="#374151">Mean Att: 88%</text>
 
             <line x1="80" y1="226" x2="840" y2="226" stroke="#9CA3AF" strokeWidth="2" strokeDasharray="5 5" />
             <text x="40" y="230" fontSize="11" fontWeight="900" fill="#374151">3.35</text>

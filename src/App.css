@@ -319,13 +319,28 @@
    STATISTICS & KPI SUMMARY PANEL
    ======================================================== */
 .stats-panel-section {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 
 .stat-kpi-card {
@@ -4320,6 +4335,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 1.25rem;
+  margin-bottom: 2.25rem;
 }
 
 .welcome-text-group {
