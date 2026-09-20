@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import './App.css';
 import initialStudents from './data/students';
 import Sidebar from './components/Sidebar';
@@ -31,6 +31,10 @@ function App() {
   const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(24);
+
   const addToast = useCallback((message, type = 'success') => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, message, type }]);
@@ -47,6 +51,12 @@ function App() {
     } else {
       setFilters(prev => ({ ...prev, [key]: value }));
     }
+    setCurrentPage(1);
+  }, []);
+
+  const handleSearchChange = useCallback((value) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
   }, []);
 
   const filteredStudents = useMemo(() => {
@@ -55,9 +65,9 @@ function App() {
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase().trim();
       result = result.filter(s =>
-        s.name.toLowerCase().includes(term) ||
-        s.email.toLowerCase().includes(term) ||
-        s.department.toLowerCase().includes(term) ||
+        (s.name && s.name.toLowerCase().includes(term)) ||
+        (s.email && s.email.toLowerCase().includes(term)) ||
+        (s.department && s.department.toLowerCase().includes(term)) ||
         (s.studentId && s.studentId.toLowerCase().includes(term))
       );
     }
@@ -93,6 +103,31 @@ function App() {
     return result;
   }, [students, searchTerm, filters, sortConfig]);
 
+  // Total pages and paginated slice
+  const totalPages = Math.max(1, Math.ceil(filteredStudents.length / itemsPerPage));
+
+  // Reset page if filtered results shrink
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
+
+  const paginatedStudents = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredStudents.slice(start, start + itemsPerPage);
+  }, [filteredStudents, currentPage, itemsPerPage]);
+
+  const handlePageChange = useCallback((newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      const gridEl = document.getElementById('search-filter');
+      if (gridEl) {
+        gridEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [totalPages]);
+
   const handleSort = useCallback((key) => {
     setSortConfig(prev => ({
       key,
@@ -122,7 +157,8 @@ function App() {
       addToast(`Student record for ${formData.name} was successfully updated.`, 'success');
     } else {
       const newId = Math.max(...students.map(s => s.id), 0) + 1;
-      setStudents(prev => [...prev, { ...formData, id: newId }]);
+      const newStuId = formData.studentId || `STU-2024-${String(newId).padStart(3, '0')}`;
+      setStudents(prev => [{ ...formData, id: newId, studentId: newStuId }, ...prev]);
       addToast(`New student ${formData.name} was successfully enrolled.`, 'success');
     }
     setShowForm(false);
@@ -145,6 +181,9 @@ function App() {
   const hasActiveFilters = Boolean(
     filters.department || filters.status || filters.gpaMin || filters.gpaMax || searchTerm
   );
+
+  const startIndex = filteredStudents.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+  const endIndex = Math.min(currentPage * itemsPerPage, filteredStudents.length);
 
   return (
     <div className={`app-root-layout ${mobileMenuOpen ? 'mobile-menu-active' : ''}`}>
@@ -186,7 +225,7 @@ function App() {
           {/* Search, Filter & View Controls */}
           <SearchFilter
             searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
+            onSearchChange={handleSearchChange}
             filters={filters}
             onFilterChange={handleFilterChange}
             viewMode={viewMode}
@@ -203,25 +242,124 @@ function App() {
               onClearFilters={() => handleFilterChange('clear', '')}
               onAddStudent={handleAddStudent}
             />
-          ) : viewMode === 'cards' ? (
-            <div className="students-cards-grid" id="students-grid">
-              {filteredStudents.map((student) => (
-                <StudentCard
-                  key={student.id}
-                  student={student}
+          ) : (
+            <>
+              {viewMode === 'cards' ? (
+                <div className="students-cards-grid" id="students-grid">
+                  {paginatedStudents.map((student) => (
+                    <StudentCard
+                      key={student.id}
+                      student={student}
+                      onEdit={handleEditStudent}
+                      onDelete={handleDeleteRequest}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <StudentTable
+                  students={paginatedStudents}
                   onEdit={handleEditStudent}
                   onDelete={handleDeleteRequest}
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
                 />
-              ))}
-            </div>
-          ) : (
-            <StudentTable
-              students={filteredStudents}
-              onEdit={handleEditStudent}
-              onDelete={handleDeleteRequest}
-              sortConfig={sortConfig}
-              onSort={handleSort}
-            />
+              )}
+
+              {/* Neobrutalism Pagination Controls Bar */}
+              <div className="pagination-bar" id="pagination-controls">
+                <div className="pagination-summary">
+                  Showing <strong>{startIndex}</strong>–<strong>{endIndex}</strong> of <strong>{filteredStudents.length}</strong> students
+                </div>
+
+                <div className="pagination-buttons">
+                  <button
+                    className="pagination-btn pagination-nav-btn"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    id="pagination-prev-btn"
+                  >
+                    ← Prev
+                  </button>
+
+                  {/* Page Numbers */}
+                  <div className="pagination-pages-group">
+                    {currentPage > 2 && (
+                      <>
+                        <button
+                          className="pagination-page-number"
+                          onClick={() => handlePageChange(1)}
+                        >
+                          1
+                        </button>
+                        {currentPage > 3 && <span className="pagination-ellipsis">…</span>}
+                      </>
+                    )}
+
+                    {currentPage > 1 && (
+                      <button
+                        className="pagination-page-number"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                      >
+                        {currentPage - 1}
+                      </button>
+                    )}
+
+                    <button className="pagination-page-number active-page">
+                      {currentPage}
+                    </button>
+
+                    {currentPage < totalPages && (
+                      <button
+                        className="pagination-page-number"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                      >
+                        {currentPage + 1}
+                      </button>
+                    )}
+
+                    {currentPage < totalPages - 1 && (
+                      <>
+                        {currentPage < totalPages - 2 && <span className="pagination-ellipsis">…</span>}
+                        <button
+                          className="pagination-page-number"
+                          onClick={() => handlePageChange(totalPages)}
+                        >
+                          {totalPages}
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  <button
+                    className="pagination-btn pagination-nav-btn"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    id="pagination-next-btn"
+                  >
+                    Next →
+                  </button>
+                </div>
+
+                {/* Per Page Selector */}
+                <div className="pagination-per-page">
+                  <label htmlFor="per-page-select">Per page:</label>
+                  <select
+                    id="per-page-select"
+                    className="per-page-dropdown"
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={12}>12</option>
+                    <option value={24}>24</option>
+                    <option value={48}>48</option>
+                    <option value={96}>96</option>
+                  </select>
+                </div>
+              </div>
+            </>
           )}
         </main>
       </div>

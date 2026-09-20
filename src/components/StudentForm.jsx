@@ -10,8 +10,11 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
     gpa: student?.gpa !== undefined ? String(student.gpa) : '3.50',
     status: student?.status || 'Active',
     enrollmentDate: student?.enrollmentDate || new Date().toISOString().split('T')[0],
-    studentId: student?.studentId || (student ? `STU-2024-${String(student.id).padStart(3, '0')}` : 'STU-2024-NEW'),
-    avatar: student?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+    studentId: student?.studentId || (student ? `STU-2024-${String(student.id).padStart(3, '0')}` : ''),
+    avatar: student?.avatar || `https://i.pravatar.cc/400?img=${Math.floor(Math.random() * 70) + 1}`,
+    credits: student?.credits !== undefined ? Number(student.credits) : 60,
+    attendance: student?.attendance !== undefined ? Number(student.attendance) : 90,
+    skills: student?.skills ? (Array.isArray(student.skills) ? student.skills.join(', ') : student.skills) : 'General, Engineering',
     initials: student?.initials || ''
   });
 
@@ -51,7 +54,7 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
     const { name, value } = e.target;
     let computedInitials = formData.initials;
     if (name === 'name') {
-      const parts = value.trim().split(' ');
+      const parts = value.trim().split(/\s+/);
       if (parts.length >= 2) {
         computedInitials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
       } else if (parts.length === 1 && parts[0].length > 0) {
@@ -97,9 +100,16 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
     });
 
     if (Object.keys(newErrors).length === 0) {
+      const skillsArray = typeof formData.skills === 'string'
+        ? formData.skills.split(',').map(s => s.trim()).filter(Boolean)
+        : formData.skills;
+
       onSubmit({
         ...formData,
-        gpa: parseFloat(parseFloat(formData.gpa).toFixed(2))
+        gpa: parseFloat(parseFloat(formData.gpa).toFixed(2)),
+        credits: parseInt(formData.credits, 10) || 60,
+        attendance: parseInt(formData.attendance, 10) || 90,
+        skills: skillsArray
       });
     }
   };
@@ -139,7 +149,7 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
                 value={formData.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="e.g., Alexander Vance"
+                placeholder="e.g., Aarav Sharma"
                 className={`form-text-input ${errors.name && touched.name ? 'input-error' : ''}`}
                 id="input-student-name"
               />
@@ -160,7 +170,7 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
                 value={formData.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="e.g., alexander.vance@university.edu"
+                placeholder="e.g., aarav.sharma@university.edu"
                 className={`form-text-input ${errors.email && touched.email ? 'input-error' : ''}`}
                 id="input-student-email"
               />
@@ -202,7 +212,6 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
                 id="select-student-status"
               >
                 <option value="Active">Active (Good Standing)</option>
-                <option value="On Leave">On Leave (Approved)</option>
                 <option value="Inactive">Inactive (Suspended/Withdrawn)</option>
               </select>
             </div>
@@ -249,6 +258,52 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
                   <span>{errors.enrollmentDate}</span>
                 </div>
               )}
+            </div>
+
+            {/* Credits */}
+            <div className="form-input-group">
+              <label className="form-label">Earned Credits</label>
+              <input
+                type="number"
+                name="credits"
+                value={formData.credits}
+                onChange={handleChange}
+                min="0"
+                max="160"
+                placeholder="60"
+                className="form-text-input"
+                id="input-student-credits"
+              />
+            </div>
+
+            {/* Attendance */}
+            <div className="form-input-group">
+              <label className="form-label">Attendance Rate (%)</label>
+              <input
+                type="number"
+                name="attendance"
+                value={formData.attendance}
+                onChange={handleChange}
+                min="0"
+                max="100"
+                placeholder="90"
+                className="form-text-input"
+                id="input-student-attendance"
+              />
+            </div>
+
+            {/* Skills */}
+            <div className="form-input-group full-width">
+              <label className="form-label">Academic Skills (Comma separated)</label>
+              <input
+                type="text"
+                name="skills"
+                value={formData.skills}
+                onChange={handleChange}
+                placeholder="e.g., Fullstack Dev, AI & ML, Algorithms"
+                className="form-text-input"
+                id="input-student-skills"
+              />
             </div>
           </div>
 

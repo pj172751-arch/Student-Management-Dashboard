@@ -15,6 +15,7 @@ function StudentCard({ student, onEdit, onDelete }) {
   };
 
   const formatDate = (dateStr) => {
+    if (!dateStr) return '';
     return new Date(dateStr).toLocaleDateString('en-US', {
       month: 'short',
       year: 'numeric'
@@ -24,6 +25,7 @@ function StudentCard({ student, onEdit, onDelete }) {
   const gpaTier = getGpaTier(student.gpa);
   const statusColors = getStatusColor(student.status);
   const studentId = student.studentId || `STU-2024-${String(student.id).padStart(3, '0')}`;
+  const initials = student.initials || (student.name ? student.name.slice(0, 2).toUpperCase() : 'ST');
 
   return (
     <div className="student-profile-card" id={`student-card-${student.id}`}>
@@ -34,13 +36,16 @@ function StudentCard({ student, onEdit, onDelete }) {
               src={student.avatar}
               alt={student.name}
               className="student-portrait"
+              loading="lazy"
               onError={(e) => {
                 e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'flex';
+                if (e.target.nextSibling) {
+                  e.target.nextSibling.style.display = 'flex';
+                }
               }}
             />
             <div className="avatar-fallback" style={{ display: 'none' }}>
-              {student.initials || student.name.slice(0, 2).toUpperCase()}
+              {initials}
             </div>
             <span className={`status-indicator-dot ${statusColors.dot}`} title={`Status: ${student.status}`}></span>
           </div>
@@ -86,12 +91,33 @@ function StudentCard({ student, onEdit, onDelete }) {
           <CalendarIcon size={13} className="meta-icon-svg" />
           <span className="meta-date-text">Enrolled {formatDate(student.enrollmentDate)}</span>
         </div>
+
+        {/* Academic Stats: Credits & Attendance from JSON */}
+        <div className="card-academic-stats">
+          <div className="academic-stat-box">
+            <span className="stat-box-label">Credits</span>
+            <span className="stat-box-val">{student.credits || 0}</span>
+          </div>
+          <div className="academic-stat-box">
+            <span className="stat-box-label">Attendance</span>
+            <span className="stat-box-val">{student.attendance ? `${student.attendance}%` : 'N/A'}</span>
+          </div>
+        </div>
+
+        {/* Skills from JSON */}
+        {student.skills && student.skills.length > 0 && (
+          <div className="card-skills-tags">
+            {student.skills.map((skill, sIdx) => (
+              <span key={sIdx} className="student-skill-chip">{skill}</span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="card-gpa-footer">
         <div className="gpa-details-row">
           <div className="gpa-score-group">
-            <span className="gpa-val">{student.gpa.toFixed(2)}</span>
+            <span className="gpa-val">{Number(student.gpa).toFixed(2)}</span>
             <span className="gpa-scale">/ 4.0</span>
           </div>
           <span

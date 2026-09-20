@@ -1690,3 +1690,224 @@
   border-radius: 9999px;
   box-shadow: 2px 2px 0px #1B1B1B;
 }
+
+/* ========================================================
+   PAGINATION CONTROLS (NEOBRUTALISM)
+   ======================================================== */
+.pagination-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.25rem 1.5rem;
+  background: #FFFFFF;
+  border: 3px solid #1B1B1B;
+  border-radius: 16px;
+  box-shadow: 6px 6px 0px #1B1B1B;
+  margin-top: 2rem;
+}
+
+.pagination-summary {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #555555;
+}
+
+.pagination-summary strong {
+  color: #1B1B1B;
+  font-weight: 900;
+}
+
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: #FFFFFF;
+  border: 2px solid #1B1B1B;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #1B1B1B;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #1B1B1B;
+  transition: all 0.15s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #00FFAE;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px #1B1B1B;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.pagination-pages-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pagination-page-number {
+  min-width: 38px;
+  height: 38px;
+  padding: 0 0.5rem;
+  border-radius: 8px;
+  background: #FFFFFF;
+  border: 2px solid #1B1B1B;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #1B1B1B;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #1B1B1B;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-page-number:hover {
+  background: #FFF9D2;
+  transform: translate(-1px, -1px);
+}
+
+.pagination-page-number.active-page {
+  background: #00BFFF;
+  color: #1B1B1B;
+  box-shadow: 3px 3px 0px #1B1B1B;
+  font-weight: 900;
+}
+
+.pagination-ellipsis {
+  font-weight: 900;
+  color: #1B1B1B;
+  padding: 0 0.25rem;
+}
+
+.pagination-per-page {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1B1B1B;
+}
+
+.per-page-dropdown {
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  background: #F1FAEE;
+  border: 2px solid #1B1B1B;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #1B1B1B;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #1B1B1B;
+}
+
+/* Academic Stats in Card */
+.card-academic-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin: 0.85rem 0 0.5rem 0;
+}
+
+.academic-stat-box {
+  background: #F8F9FA;
+  border: 1.5px solid #1B1B1B;
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 2px 2px 0px #1B1B1B;
+}
+
+.stat-box-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #555555;
+  text-transform: uppercase;
+}
+
+.stat-box-val {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #1B1B1B;
+}
+
+.card-skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.student-skill-chip {
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: #FFF9D2;
+  color: #1B1B1B;
+  border: 1.5px solid #1B1B1B;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  box-shadow: 1.5px 1.5px 0px #1B1B1B;
+}
+
+/* Table Metric Cells */
+.table-credits-cell,
+.table-attendance-cell {
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.table-metric-tag {
+  background: #F8F9FA;
+  border: 1.5px solid #1B1B1B;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 800;
+  color: #1B1B1B;
+}
+
+.table-attendance-tag {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  border: 1.5px solid #1B1B1B;
+  font-weight: 900;
+  font-size: 0.8rem;
+}
+
+.table-attendance-tag.attendance-high {
+  background: #00FFAE;
+  color: #1B1B1B;
+}
+
+.table-attendance-tag.attendance-mid {
+  background: #FFD700;
+  color: #1B1B1B;
+}
+
+.top-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: #FFE2E5;
+  color: #1B1B1B;
+}
+

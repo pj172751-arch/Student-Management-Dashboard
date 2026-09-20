@@ -1,8 +1,8 @@
-import { TrophyIcon, StarIcon, EditIcon, AwardIcon } from './Icons';
+import { TrophyIcon, EditIcon } from './Icons';
 
 function TopStudents({ students, onSelectStudent }) {
   const topStudents = [...students]
-    .sort((a, b) => b.gpa - a.gpa)
+    .sort((a, b) => (b.gpa - a.gpa) || (b.attendance - a.attendance) || (b.credits - a.credits))
     .slice(0, 5);
 
   const separatorColors = [
@@ -24,17 +24,18 @@ function TopStudents({ students, onSelectStudent }) {
           </div>
           <div>
             <h2 className="section-heading">Dean's Honor Roll — Top 5 Scholars</h2>
-            <p className="section-subtext">Interactive 3D cascading showcase with performance analytics</p>
+            <p className="section-subtext">Distinguished academic performers across 1,000 enrolled students</p>
           </div>
         </div>
         <div className="showcase-hint-pill">
-          <span>Hover cards to reveal 3D perspective cascade</span>
+          <span>Interactive 3D Neobrutalist Cards</span>
         </div>
       </div>
 
       <div className="creationsBlocUl">
         {topStudents.map((student, index) => {
           const sepColor = separatorColors[index] || '#854F6C';
+          const initials = student.initials || (student.name ? student.name.slice(0, 2).toUpperCase() : 'ST');
           return (
             <figure
               key={student.id}
@@ -49,7 +50,7 @@ function TopStudents({ students, onSelectStudent }) {
                   #{index + 1} Honor
                 </span>
                 <span className="card-gpa-badge">
-                  {student.gpa.toFixed(2)} GPA
+                  {Number(student.gpa).toFixed(2)} GPA
                 </span>
               </div>
 
@@ -61,10 +62,17 @@ function TopStudents({ students, onSelectStudent }) {
                 <img
                   src={student.avatar}
                   alt={student.name}
+                  loading="lazy"
                   onError={(e) => {
-                    e.target.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80';
+                    e.target.style.display = 'none';
+                    if (e.target.nextSibling) {
+                      e.target.nextSibling.style.display = 'flex';
+                    }
                   }}
                 />
+                <div className="top-avatar-fallback" style={{ display: 'none' }}>
+                  {initials}
+                </div>
               </div>
 
               {/* Student Name & Department */}
@@ -74,8 +82,8 @@ function TopStudents({ students, onSelectStudent }) {
 
                 {/* Metrics row: Credits & Attendance */}
                 <div className="card-metrics-row">
-                  <span className="metric-item">Credits: <strong>{student.credits || 80}</strong></span>
-                  <span className="metric-item">Attendance: <strong>{student.attendance || 95}%</strong></span>
+                  <span className="metric-item">Credits: <strong>{student.credits || 0}</strong></span>
+                  <span className="metric-item">Attendance: <strong>{student.attendance || 0}%</strong></span>
                 </div>
 
                 {/* Skills tags */}

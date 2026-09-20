@@ -24,7 +24,7 @@ function SearchFilter({
           <input
             type="text"
             className="search-text-input"
-            placeholder="Search students by name, email, or department..."
+            placeholder="Search students by name, email, student ID, or department..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             id="search-input"
@@ -75,7 +75,7 @@ function SearchFilter({
             value={filters.department}
             onChange={(e) => onFilterChange('department', e.target.value)}
           >
-            <option value="">All Departments</option>
+            <option value="">All Departments (10)</option>
             {departments.map((dept) => (
               <option key={dept} value={dept}>
                 {dept}
@@ -94,7 +94,6 @@ function SearchFilter({
           >
             <option value="">All Statuses</option>
             <option value="Active">Active</option>
-            <option value="On Leave">On Leave</option>
             <option value="Inactive">Inactive</option>
           </select>
         </div>

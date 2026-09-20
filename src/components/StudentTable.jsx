@@ -20,6 +20,7 @@ function StudentTable({ students, onEdit, onDelete, sortConfig, onSort }) {
   };
 
   const formatDate = (dateStr) => {
+    if (!dateStr) return '';
     return new Date(dateStr).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -56,6 +57,18 @@ function StudentTable({ students, onEdit, onDelete, sortConfig, onSort }) {
                 {renderSortIcon('gpa')}
               </div>
             </th>
+            <th onClick={() => onSort('credits')} className="th-sortable">
+              <div className="th-content">
+                <span>Credits</span>
+                {renderSortIcon('credits')}
+              </div>
+            </th>
+            <th onClick={() => onSort('attendance')} className="th-sortable">
+              <div className="th-content">
+                <span>Attendance</span>
+                {renderSortIcon('attendance')}
+              </div>
+            </th>
             <th onClick={() => onSort('status')} className="th-sortable">
               <div className="th-content">
                 <span>Standing</span>
@@ -74,6 +87,7 @@ function StudentTable({ students, onEdit, onDelete, sortConfig, onSort }) {
         <tbody>
           {students.map((student) => {
             const studentId = student.studentId || `STU-2024-${String(student.id).padStart(3, '0')}`;
+            const initials = student.initials || (student.name ? student.name.slice(0, 2).toUpperCase() : 'ST');
             return (
               <tr key={student.id} className="table-data-row">
                 <td>
@@ -83,13 +97,16 @@ function StudentTable({ students, onEdit, onDelete, sortConfig, onSort }) {
                         src={student.avatar}
                         alt={student.name}
                         className="table-avatar-img"
+                        loading="lazy"
                         onError={(e) => {
                           e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
+                          if (e.target.nextSibling) {
+                            e.target.nextSibling.style.display = 'flex';
+                          }
                         }}
                       />
                       <div className="avatar-fallback" style={{ display: 'none' }}>
-                        {student.initials || student.name.slice(0, 2).toUpperCase()}
+                        {initials}
                       </div>
                     </div>
                     <div className="table-name-group">
@@ -105,7 +122,7 @@ function StudentTable({ students, onEdit, onDelete, sortConfig, onSort }) {
                 <td>
                   <div className="table-gpa-cell">
                     <span className="table-gpa-number" style={{ color: getGpaColor(student.gpa) }}>
-                      {student.gpa.toFixed(2)}
+                      {Number(student.gpa).toFixed(2)}
                     </span>
                     <div className="table-gpa-mini-track">
                       <div
@@ -117,6 +134,14 @@ function StudentTable({ students, onEdit, onDelete, sortConfig, onSort }) {
                       ></div>
                     </div>
                   </div>
+                </td>
+                <td className="table-credits-cell">
+                  <span className="table-metric-tag">{student.credits || 0}</span>
+                </td>
+                <td className="table-attendance-cell">
+                  <span className={`table-attendance-tag ${(student.attendance || 0) >= 85 ? 'attendance-high' : 'attendance-mid'}`}>
+                    {student.attendance ? `${student.attendance}%` : 'N/A'}
+                  </span>
                 </td>
                 <td>
                   <span className={`table-status-pill ${getStatusBadge(student.status)}`}>
