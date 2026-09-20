@@ -1911,3 +1911,76 @@
   color: #1B1B1B;
 }
 
+/* ========================================================
+   MODAL AVATAR PICKER (BOYS & GIRLS)
+   ======================================================== */
+.avatar-selection-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-height: 175px;
+  overflow-y: auto;
+  padding: 0.65rem;
+  background: #F8F9FA;
+  border: 2px solid #1B1B1B;
+  border-radius: 10px;
+}
+
+.avatar-picker-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.picker-sublabel {
+  font-size: 0.725rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #1B1B1B;
+  letter-spacing: 0.05em;
+}
+
+.avatar-options-row {
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding: 0.25rem 0.15rem;
+}
+
+.avatar-option-btn {
+  width: 44px;
+  height: 44px;
+  padding: 2px;
+  border-radius: 8px;
+  border: 2px solid #1B1B1B;
+  background: #FFFFFF;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #1B1B1B;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-option-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #1B1B1B;
+}
+
+.avatar-option-btn.selected {
+  border-color: #1B1B1B;
+  background: #00FFAE;
+  box-shadow: 3px 3px 0px #1B1B1B;
+  outline: 2px solid #00FFAE;
+  transform: scale(1.08);
+}
+
+.avatar-option-btn img {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+

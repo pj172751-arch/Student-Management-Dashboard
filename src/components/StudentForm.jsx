@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { departments } from '../data/students';
+import { departments, boyAvatars, girlAvatars } from '../data/students';
 import { CloseIcon, CheckCircleIcon, AcademicCap, AlertCircleIcon } from './Icons';
 
 function StudentForm({ student, onSubmit, onClose, existingEmails }) {
@@ -11,10 +11,10 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
     status: student?.status || 'Active',
     enrollmentDate: student?.enrollmentDate || new Date().toISOString().split('T')[0],
     studentId: student?.studentId || (student ? `STU-2024-${String(student.id).padStart(3, '0')}` : ''),
-    avatar: student?.avatar || `https://i.pravatar.cc/400?img=${Math.floor(Math.random() * 70) + 1}`,
+    avatar: student?.avatar || boyAvatars[0],
     credits: student?.credits !== undefined ? Number(student.credits) : 60,
     attendance: student?.attendance !== undefined ? Number(student.attendance) : 90,
-    skills: student?.skills ? (Array.isArray(student.skills) ? student.skills.join(', ') : student.skills) : 'General, Engineering',
+    skills: student?.skills ? (Array.isArray(student.skills) ? student.skills.join(', ') : student.skills) : 'Fullstack Dev, AI & ML, Algorithms',
     initials: student?.initials || ''
   });
 
@@ -149,7 +149,7 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
                 value={formData.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="e.g., Aarav Sharma"
+                placeholder="e.g., Aarav Sharma or Aadhya Sharma"
                 className={`form-text-input ${errors.name && touched.name ? 'input-error' : ''}`}
                 id="input-student-name"
               />
@@ -180,6 +180,45 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
                   <span>{errors.email}</span>
                 </div>
               )}
+            </div>
+
+            {/* Avatar Selector */}
+            <div className="form-input-group full-width">
+              <label className="form-label">Select Illustrated Avatar</label>
+              <div className="avatar-selection-scroll">
+                <div className="avatar-picker-group">
+                  <span className="picker-sublabel">Boy Avatars</span>
+                  <div className="avatar-options-row">
+                    {boyAvatars.map((av, idx) => (
+                      <button
+                        type="button"
+                        key={`boy-${idx}`}
+                        className={`avatar-option-btn ${formData.avatar === av ? 'selected' : ''}`}
+                        onClick={() => setFormData(prev => ({ ...prev, avatar: av }))}
+                        title={`Boy Avatar ${idx + 1}`}
+                      >
+                        <img src={av} alt={`Boy ${idx + 1}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="avatar-picker-group">
+                  <span className="picker-sublabel">Girl Avatars</span>
+                  <div className="avatar-options-row">
+                    {girlAvatars.map((av, idx) => (
+                      <button
+                        type="button"
+                        key={`girl-${idx}`}
+                        className={`avatar-option-btn ${formData.avatar === av ? 'selected' : ''}`}
+                        onClick={() => setFormData(prev => ({ ...prev, avatar: av }))}
+                        title={`Girl Avatar ${idx + 1}`}
+                      >
+                        <img src={av} alt={`Girl ${idx + 1}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Department */}
