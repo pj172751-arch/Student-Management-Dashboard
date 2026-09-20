@@ -7,7 +7,7 @@ function Sidebar({ activeSection, onSectionChange }) {
   const navItems = [
     { id: 'dashboard', icon: DashboardIcon, label: 'Dashboard' },
     { id: 'students', icon: UsersIcon, label: 'Students' },
-    { id: 'courses', icon: BookOpenIcon, label: 'Departments' },
+    { id: 'departments', icon: BookOpenIcon, label: 'Departments' },
     { id: 'analytics', icon: AnalyticsIcon, label: 'Analytics' },
   ];
 
@@ -50,11 +50,17 @@ function Sidebar({ activeSection, onSectionChange }) {
       </nav>
 
       <div className="sidebar-footer">
-        <button className="sidebar-nav-item" title="Settings" id="nav-settings">
+        <button
+          className={`sidebar-nav-item ${activeSection === 'settings' ? 'active' : ''}`}
+          title="Settings"
+          id="nav-settings"
+          onClick={() => onSectionChange('settings')}
+        >
           <span className="nav-icon">
             <SettingsIcon size={20} />
           </span>
           {!collapsed && <span className="nav-label">Settings</span>}
+          {activeSection === 'settings' && <span className="nav-active-pip"></span>}
         </button>
 
         <button

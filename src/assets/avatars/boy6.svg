@@ -21,7 +21,7 @@
   <circle cx="99" cy="71" r="1.8" fill="#FFFFFF"/>
   <rect x="55" y="62" width="16" height="4" rx="2" fill="#190019"/>
   <rect x="89" y="62" width="16" height="4" rx="2" fill="#190019"/>
-  <path d="M 42 48 L 52 22 L 64 36 L 76 18 L 88 34 L 100 20 L 110 38 L 118 48 C 105 40, 90 38, 80 38 C 65 38, 52 42, 42 48 Z" fill="#1A1A24" stroke="#190019" stroke-width="5"/>
+  <path d="M 40 50 C 40 28, 56 22, 80 22 C 104 22, 120 28, 120 50 C 110 38, 96 36, 80 36 C 64 36, 50 38, 40 50 Z" fill="#1A1A24" stroke="#190019" stroke-width="5"/>
   
     <path d="M 34 80 C 34 35, 126 35, 126 80" fill="none" stroke="#FF006E" stroke-width="7"/>
     <rect x="28" y="72" width="12" height="24" rx="6" fill="#FFBE0B" stroke="#190019" stroke-width="3"/>

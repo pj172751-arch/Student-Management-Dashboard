@@ -21,8 +21,7 @@
   <circle cx="99" cy="71" r="1.8" fill="#FFFFFF"/>
   <rect x="55" y="62" width="16" height="4" rx="2" fill="#190019"/>
   <rect x="89" y="62" width="16" height="4" rx="2" fill="#190019"/>
-  <ellipse cx="80" cy="48" rx="46" ry="10" fill="#8338EC" stroke="#190019" stroke-width="5"/>
-    <path d="M 48 48 L 54 26 L 106 26 L 112 48 Z" fill="#8338EC" stroke="#190019" stroke-width="5"/>
+  <path d="M 40 50 C 40 28, 56 22, 80 22 C 104 22, 120 28, 120 50 C 110 38, 96 36, 80 36 C 64 36, 50 38, 40 50 Z" fill="#1A1A24" stroke="#190019" stroke-width="5"/>
   
     <rect x="50" y="64" width="24" height="20" rx="5" fill="none" stroke="#190019" stroke-width="3.5"/>
     <rect x="86" y="64" width="24" height="20" rx="5" fill="none" stroke="#190019" stroke-width="3.5"/>

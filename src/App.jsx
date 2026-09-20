@@ -12,6 +12,9 @@ import StudentForm from './components/StudentForm';
 import ConfirmDialog from './components/ConfirmDialog';
 import EmptyState from './components/EmptyState';
 import Toast from './components/Toast';
+import SettingsPage from './components/SettingsPage';
+import DepartmentsView from './components/DepartmentsView';
+import AnalyticsView from './components/AnalyticsView';
 
 function App() {
   const [students, setStudents] = useState(initialStudents);
@@ -59,6 +62,14 @@ function App() {
     setCurrentPage(1);
   }, []);
 
+  const handleResetData = useCallback(() => {
+    setStudents(initialStudents);
+    setFilters({ department: '', status: '', gpaMin: '', gpaMax: '' });
+    setSearchTerm('');
+    setCurrentPage(1);
+    addToast('All student records reset to the initial 1,000 dataset.', 'info');
+  }, [addToast]);
+
   const filteredStudents = useMemo(() => {
     let result = [...students];
 
@@ -103,10 +114,8 @@ function App() {
     return result;
   }, [students, searchTerm, filters, sortConfig]);
 
-  // Total pages and paginated slice
   const totalPages = Math.max(1, Math.ceil(filteredStudents.length / itemsPerPage));
 
-  // Reset page if filtered results shrink
   useEffect(() => {
     if (currentPage > totalPages) {
       setCurrentPage(1);
@@ -213,152 +222,328 @@ function App() {
         <Header onAddStudent={handleAddStudent} />
 
         <main className="dashboard-body-container">
-          {/* Real-time KPI Stats Row */}
-          <StatsPanel students={students} />
-
-          {/* Academic Honors Spotlight */}
-          <TopStudents
-            students={students}
-            onSelectStudent={handleEditStudent}
-          />
-
-          {/* Search, Filter & View Controls */}
-          <SearchFilter
-            searchTerm={searchTerm}
-            onSearchChange={handleSearchChange}
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            totalResults={filteredStudents.length}
-            totalStudents={students.length}
-          />
-
-          {/* Dynamic Records: Empty State, Cards View, or Table View */}
-          {filteredStudents.length === 0 ? (
-            <EmptyState
-              searchTerm={searchTerm}
-              hasFilters={hasActiveFilters}
-              onClearFilters={() => handleFilterChange('clear', '')}
-              onAddStudent={handleAddStudent}
+          {/* SECTION: SETTINGS PAGE */}
+          {activeSection === 'settings' && (
+            <SettingsPage
+              students={students}
+              onResetData={handleResetData}
+              addToast={addToast}
             />
-          ) : (
+          )}
+
+          {/* SECTION: DEPARTMENTS BREAKDOWN */}
+          {activeSection === 'departments' && (
+            <DepartmentsView
+              students={students}
+              onSelectDepartment={(deptName) => {
+                handleFilterChange('department', deptName);
+                setActiveSection('students');
+              }}
+            />
+          )}
+
+          {/* SECTION: ACADEMIC ANALYTICS */}
+          {activeSection === 'analytics' && (
+            <AnalyticsView students={students} />
+          )}
+
+          {/* SECTION: DASHBOARD (Overview with Stats, Top 5 & Directory) */}
+          {activeSection === 'dashboard' && (
             <>
-              {viewMode === 'cards' ? (
-                <div className="students-cards-grid" id="students-grid">
-                  {paginatedStudents.map((student) => (
-                    <StudentCard
-                      key={student.id}
-                      student={student}
+              {/* Real-time KPI Stats Row */}
+              <StatsPanel students={students} />
+
+              {/* Academic Honors Spotlight */}
+              <TopStudents
+                students={students}
+                onSelectStudent={handleEditStudent}
+              />
+
+              {/* Search, Filter & View Controls */}
+              <SearchFilter
+                searchTerm={searchTerm}
+                onSearchChange={handleSearchChange}
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                totalResults={filteredStudents.length}
+                totalStudents={students.length}
+              />
+
+              {/* Dynamic Records Grid / Table */}
+              {filteredStudents.length === 0 ? (
+                <EmptyState
+                  searchTerm={searchTerm}
+                  hasFilters={hasActiveFilters}
+                  onClearFilters={() => handleFilterChange('clear', '')}
+                  onAddStudent={handleAddStudent}
+                />
+              ) : (
+                <>
+                  {viewMode === 'cards' ? (
+                    <div className="students-cards-grid" id="students-grid">
+                      {paginatedStudents.map((student) => (
+                        <StudentCard
+                          key={student.id}
+                          student={student}
+                          onEdit={handleEditStudent}
+                          onDelete={handleDeleteRequest}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <StudentTable
+                      students={paginatedStudents}
                       onEdit={handleEditStudent}
                       onDelete={handleDeleteRequest}
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
                     />
-                  ))}
-                </div>
-              ) : (
-                <StudentTable
-                  students={paginatedStudents}
-                  onEdit={handleEditStudent}
-                  onDelete={handleDeleteRequest}
-                  sortConfig={sortConfig}
-                  onSort={handleSort}
-                />
-              )}
+                  )}
 
-              {/* Neobrutalism Pagination Controls Bar */}
-              <div className="pagination-bar" id="pagination-controls">
-                <div className="pagination-summary">
-                  Showing <strong>{startIndex}</strong>–<strong>{endIndex}</strong> of <strong>{filteredStudents.length}</strong> students
-                </div>
+                  {/* Pagination Bar */}
+                  <div className="pagination-bar" id="pagination-controls">
+                    <div className="pagination-summary">
+                      Showing <strong>{startIndex}</strong>–<strong>{endIndex}</strong> of <strong>{filteredStudents.length}</strong> students
+                    </div>
 
-                <div className="pagination-buttons">
-                  <button
-                    className="pagination-btn pagination-nav-btn"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    id="pagination-prev-btn"
-                  >
-                    ← Prev
-                  </button>
-
-                  {/* Page Numbers */}
-                  <div className="pagination-pages-group">
-                    {currentPage > 2 && (
-                      <>
-                        <button
-                          className="pagination-page-number"
-                          onClick={() => handlePageChange(1)}
-                        >
-                          1
-                        </button>
-                        {currentPage > 3 && <span className="pagination-ellipsis">…</span>}
-                      </>
-                    )}
-
-                    {currentPage > 1 && (
+                    <div className="pagination-buttons">
                       <button
-                        className="pagination-page-number"
+                        className="pagination-btn pagination-nav-btn"
                         onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        id="pagination-prev-btn"
                       >
-                        {currentPage - 1}
+                        ← Prev
                       </button>
-                    )}
 
-                    <button className="pagination-page-number active-page">
-                      {currentPage}
-                    </button>
+                      <div className="pagination-pages-group">
+                        {currentPage > 2 && (
+                          <>
+                            <button
+                              className="pagination-page-number"
+                              onClick={() => handlePageChange(1)}
+                            >
+                              1
+                            </button>
+                            {currentPage > 3 && <span className="pagination-ellipsis">…</span>}
+                          </>
+                        )}
 
-                    {currentPage < totalPages && (
-                      <button
-                        className="pagination-page-number"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                      >
-                        {currentPage + 1}
-                      </button>
-                    )}
+                        {currentPage > 1 && (
+                          <button
+                            className="pagination-page-number"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                          >
+                            {currentPage - 1}
+                          </button>
+                        )}
 
-                    {currentPage < totalPages - 1 && (
-                      <>
-                        {currentPage < totalPages - 2 && <span className="pagination-ellipsis">…</span>}
-                        <button
-                          className="pagination-page-number"
-                          onClick={() => handlePageChange(totalPages)}
-                        >
-                          {totalPages}
+                        <button className="pagination-page-number active-page">
+                          {currentPage}
                         </button>
-                      </>
-                    )}
+
+                        {currentPage < totalPages && (
+                          <button
+                            className="pagination-page-number"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                          >
+                            {currentPage + 1}
+                          </button>
+                        )}
+
+                        {currentPage < totalPages - 1 && (
+                          <>
+                            {currentPage < totalPages - 2 && <span className="pagination-ellipsis">…</span>}
+                            <button
+                              className="pagination-page-number"
+                              onClick={() => handlePageChange(totalPages)}
+                            >
+                              {totalPages}
+                            </button>
+                          </>
+                        )}
+                      </div>
+
+                      <button
+                        className="pagination-btn pagination-nav-btn"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        id="pagination-next-btn"
+                      >
+                        Next →
+                      </button>
+                    </div>
+
+                    <div className="pagination-per-page">
+                      <label htmlFor="per-page-select">Per page:</label>
+                      <select
+                        id="per-page-select"
+                        className="per-page-dropdown"
+                        value={itemsPerPage}
+                        onChange={(e) => {
+                          setItemsPerPage(Number(e.target.value));
+                          setCurrentPage(1);
+                        }}
+                      >
+                        <option value={12}>12</option>
+                        <option value={24}>24</option>
+                        <option value={48}>48</option>
+                        <option value={96}>96</option>
+                      </select>
+                    </div>
                   </div>
+                </>
+              )}
+            </>
+          )}
 
-                  <button
-                    className="pagination-btn pagination-nav-btn"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    id="pagination-next-btn"
-                  >
-                    Next →
-                  </button>
-                </div>
-
-                {/* Per Page Selector */}
-                <div className="pagination-per-page">
-                  <label htmlFor="per-page-select">Per page:</label>
-                  <select
-                    id="per-page-select"
-                    className="per-page-dropdown"
-                    value={itemsPerPage}
-                    onChange={(e) => {
-                      setItemsPerPage(Number(e.target.value));
-                      setCurrentPage(1);
-                    }}
-                  >
-                    <option value={12}>12</option>
-                    <option value={24}>24</option>
-                    <option value={48}>48</option>
-                    <option value={96}>96</option>
-                  </select>
+          {/* SECTION: STUDENTS DIRECTORY (Pure Directory View) */}
+          {activeSection === 'students' && (
+            <>
+              <div className="section-header-banner">
+                <div className="section-title-wrap">
+                  <div>
+                    <h2 className="section-heading">Active Student Registry Directory</h2>
+                    <p className="section-subtext">Comprehensive listing of all {students.length} enrolled student scholars</p>
+                  </div>
                 </div>
               </div>
+
+              <SearchFilter
+                searchTerm={searchTerm}
+                onSearchChange={handleSearchChange}
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                totalResults={filteredStudents.length}
+                totalStudents={students.length}
+              />
+
+              {filteredStudents.length === 0 ? (
+                <EmptyState
+                  searchTerm={searchTerm}
+                  hasFilters={hasActiveFilters}
+                  onClearFilters={() => handleFilterChange('clear', '')}
+                  onAddStudent={handleAddStudent}
+                />
+              ) : (
+                <>
+                  {viewMode === 'cards' ? (
+                    <div className="students-cards-grid" id="students-grid">
+                      {paginatedStudents.map((student) => (
+                        <StudentCard
+                          key={student.id}
+                          student={student}
+                          onEdit={handleEditStudent}
+                          onDelete={handleDeleteRequest}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <StudentTable
+                      students={paginatedStudents}
+                      onEdit={handleEditStudent}
+                      onDelete={handleDeleteRequest}
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                    />
+                  )}
+
+                  {/* Pagination Bar */}
+                  <div className="pagination-bar" id="pagination-controls-students">
+                    <div className="pagination-summary">
+                      Showing <strong>{startIndex}</strong>–<strong>{endIndex}</strong> of <strong>{filteredStudents.length}</strong> students
+                    </div>
+
+                    <div className="pagination-buttons">
+                      <button
+                        className="pagination-btn pagination-nav-btn"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        ← Prev
+                      </button>
+
+                      <div className="pagination-pages-group">
+                        {currentPage > 2 && (
+                          <>
+                            <button
+                              className="pagination-page-number"
+                              onClick={() => handlePageChange(1)}
+                            >
+                              1
+                            </button>
+                            {currentPage > 3 && <span className="pagination-ellipsis">…</span>}
+                          </>
+                        )}
+
+                        {currentPage > 1 && (
+                          <button
+                            className="pagination-page-number"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                          >
+                            {currentPage - 1}
+                          </button>
+                        )}
+
+                        <button className="pagination-page-number active-page">
+                          {currentPage}
+                        </button>
+
+                        {currentPage < totalPages && (
+                          <button
+                            className="pagination-page-number"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                          >
+                            {currentPage + 1}
+                          </button>
+                        )}
+
+                        {currentPage < totalPages - 1 && (
+                          <>
+                            {currentPage < totalPages - 2 && <span className="pagination-ellipsis">…</span>}
+                            <button
+                              className="pagination-page-number"
+                              onClick={() => handlePageChange(totalPages)}
+                            >
+                              {totalPages}
+                            </button>
+                          </>
+                        )}
+                      </div>
+
+                      <button
+                        className="pagination-btn pagination-nav-btn"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                      >
+                        Next →
+                      </button>
+                    </div>
+
+                    <div className="pagination-per-page">
+                      <label htmlFor="per-page-select-students">Per page:</label>
+                      <select
+                        id="per-page-select-students"
+                        className="per-page-dropdown"
+                        value={itemsPerPage}
+                        onChange={(e) => {
+                          setItemsPerPage(Number(e.target.value));
+                          setCurrentPage(1);
+                        }}
+                      >
+                        <option value={12}>12</option>
+                        <option value={24}>24</option>
+                        <option value={48}>48</option>
+                        <option value={96}>96</option>
+                      </select>
+                    </div>
+                  </div>
+                </>
+              )}
             </>
           )}
         </main>
