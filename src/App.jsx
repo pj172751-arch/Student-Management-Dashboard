@@ -38,13 +38,7 @@ function App() {
 
   // System & Institutional Settings
   const [systemSettings, setSystemSettings] = useState(() => {
-    try {
-      const saved = localStorage.getItem('lj_polytechnic_settings');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      // ignore
-    }
-    return {
+    const defaultSettings = {
       institutionName: 'LJ Polytechnic',
       academicYear: '2026–2027 Academic Session',
       registrarEmail: 'registrar@ljpolytechnic.edu',
@@ -57,6 +51,13 @@ function App() {
       enableAutoSave: true,
       requireEmailVerification: true
     };
+    try {
+      const saved = localStorage.getItem('lj_polytechnic_settings');
+      if (saved) return { ...defaultSettings, ...JSON.parse(saved) };
+    } catch {
+      // ignore
+    }
+    return defaultSettings;
   });
 
   const addToast = useCallback((message, type = 'success') => {
@@ -69,10 +70,17 @@ function App() {
   }, []);
 
   const handleSaveSettings = useCallback((newSettings) => {
+    if (!newSettings) return;
     setSystemSettings(newSettings);
+    if (newSettings.defaultView) {
+      setViewMode(newSettings.defaultView);
+    }
+    if (newSettings.defaultPageSize) {
+      setItemsPerPage(Number(newSettings.defaultPageSize) || 24);
+    }
     try {
       localStorage.setItem('lj_polytechnic_settings', JSON.stringify(newSettings));
-    } catch (e) {
+    } catch {
       // ignore
     }
     addToast('Institutional settings and academic criteria updated successfully.', 'success');

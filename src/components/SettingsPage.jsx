@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { SettingsIcon, CheckCircleIcon, RotateCcwIcon, AwardIcon, AcademicCap, UsersIcon, BookOpenIcon } from './Icons';
+import { useState, useEffect } from 'react';
+import { SettingsIcon, CheckCircleIcon, RotateCcwIcon, AwardIcon, AcademicCap, BookOpenIcon } from './Icons';
 
-function SettingsPage({ students, settings: externalSettings, onResetData, onSaveSettings, addToast }) {
+function SettingsPage({ students, settings: externalSettings, onResetData, onSaveSettings }) {
   const [activeTab, setActiveTab] = useState('institution'); // 'institution' | 'grading' | 'display' | 'data'
 
   const [settings, setSettings] = useState(() => externalSettings || {
@@ -20,6 +20,12 @@ function SettingsPage({ students, settings: externalSettings, onResetData, onSav
 
   const [saved, setSaved] = useState(false);
 
+  useEffect(() => {
+    if (externalSettings) {
+      setSettings(externalSettings);
+    }
+  }, [externalSettings]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setSettings(prev => ({
@@ -30,14 +36,14 @@ function SettingsPage({ students, settings: externalSettings, onResetData, onSav
   };
 
   const handleSave = (e) => {
-    if (e && e.preventDefault) e.preventDefault();
+    if (e) {
+      if (typeof e.preventDefault === 'function') e.preventDefault();
+      if (typeof e.stopPropagation === 'function') e.stopPropagation();
+    }
     if (onSaveSettings) {
       onSaveSettings(settings);
     }
     setSaved(true);
-    if (addToast) {
-      addToast('Institutional settings and academic criteria updated successfully.', 'success');
-    }
     setTimeout(() => setSaved(false), 3500);
   };
 
@@ -156,7 +162,16 @@ function SettingsPage({ students, settings: externalSettings, onResetData, onSav
       </div>
 
       {/* Settings Form Body */}
-      <form onSubmit={handleSave} className="settings-body-form" noValidate>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleSave(e);
+        }}
+        action="javascript:void(0);"
+        className="settings-body-form"
+        noValidate
+      >
         {/* TAB 1: INSTITUTION IDENTITY */}
         {activeTab === 'institution' && (
           <div className="settings-tab-pane">
@@ -516,7 +531,7 @@ function SettingsPage({ students, settings: externalSettings, onResetData, onSav
           </div>
 
           <button
-            type="submit"
+            type="button"
             className="settings-save-button-primary"
             id="btn-save-settings"
             onClick={handleSave}
