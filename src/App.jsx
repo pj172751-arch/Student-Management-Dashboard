@@ -15,7 +15,7 @@ import Toast from './components/Toast';
 import SettingsPage from './components/SettingsPage';
 import DepartmentsView from './components/DepartmentsView';
 import AnalyticsView from './components/AnalyticsView';
-import { PlusIcon, AnalyticsIcon, BookOpenIcon, AwardIcon } from './components/Icons';
+import { PlusIcon, AnalyticsIcon, BookOpenIcon } from './components/Icons';
 
 function App() {
   const [students, setStudents] = useState(initialStudents);
