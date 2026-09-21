@@ -50,7 +50,7 @@ function TopStudents({ students, onSelectStudent }) {
                   {badge.label}
                 </span>
                 <span className="card-gpa-badge">
-                  {Number(student.gpa).toFixed(2)} GPA
+                  {Number(student.gpa).toFixed(2)} SPI
                 </span>
               </div>
 
@@ -97,7 +97,7 @@ function TopStudents({ students, onSelectStudent }) {
 
                 {/* Quick Edit Footer */}
                 <div className="card-prez-footer">
-                  <span className="student-id-sub">{student.studentId || `STU-2024-${student.id}`}</span>
+                  <span className="student-id-sub">{student.studentId || `STU-2026-${student.id}`}</span>
                   <button
                     className="card-quick-edit-btn"
                     onClick={(e) => {

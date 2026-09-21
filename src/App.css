@@ -44,6 +44,25 @@
   padding: 1.5rem 0.5rem;
 }
 
+.floating-sidebar.collapsed .sidebar-logo {
+  justify-content: center;
+}
+
+.floating-sidebar.collapsed .sidebar-nav-item {
+  justify-content: center;
+  padding: 0.75rem 0;
+}
+
+.floating-sidebar.collapsed .nav-active-pip {
+  display: none;
+}
+
+.floating-sidebar.collapsed .sidebar-collapse-btn {
+  text-align: center;
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
+}
+
 .sidebar-top {
   padding: 0.25rem 0.5rem 1.25rem 0.5rem;
   border-bottom: 2.5px solid #1B1B1B;
@@ -177,6 +196,11 @@
   position: relative;
   z-index: 1;
   max-width: 1440px;
+  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-root-layout.sidebar-collapsed .main-content-scroll {
+  margin-left: calc(84px + 3rem);
 }
 
 .floating-header {
@@ -1116,17 +1140,21 @@
 /* ========================================================
    ENTERPRISE DATA TABLE VIEW
    ======================================================== */
+.table-responsive-wrapper,
 .table-container {
+  width: 100%;
   background: #FFFFFF;
-  border: 2.5px solid #1B1B1B;
+  border: 3px solid #1B1B1B;
   border-radius: 16px;
-  overflow: hidden;
   box-shadow: 6px 6px 0px #1B1B1B;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin-bottom: 2.5rem;
 }
 
 .enterprise-data-table {
   width: 100%;
+  min-width: 980px;
   border-collapse: collapse;
   text-align: left;
 }
@@ -1140,18 +1168,36 @@
   letter-spacing: 0.05em;
   padding: 1.1rem 1.25rem;
   border-bottom: 2.5px solid #1B1B1B;
+  white-space: nowrap;
+}
+
+.enterprise-data-table th.th-sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.enterprise-data-table th.th-sortable:hover {
+  background: #FFD700;
+}
+
+.th-content {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .enterprise-data-table td {
-  padding: 1rem 1.25rem;
-  border-bottom: 1.5px solid #1B1B1B;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 2px solid #E5E7EB;
   color: #1B1B1B;
   font-size: 0.875rem;
   font-weight: 600;
+  vertical-align: middle;
 }
 
 .enterprise-data-table tbody tr:hover {
-  background-color: #FFF9D2;
+  background-color: #FFFDF0;
 }
 
 .table-student-cell {
@@ -1160,49 +1206,179 @@
   gap: 0.85rem;
 }
 
-.table-avatar-img {
-  width: 42px;
-  height: 42px;
+.table-avatar-frame {
+  width: 40px;
+  height: 40px;
   border-radius: 10px;
-  object-fit: contain;
+  border: 2px solid #1B1B1B;
   background: #E8F7FF;
-  border: 1.5px solid #1B1B1B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 2px 2px 0px #1B1B1B;
+  flex-shrink: 0;
+}
+
+.table-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.table-name-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .table-student-name {
   font-weight: 900;
   color: #1B1B1B;
-  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.2;
 }
 
-.table-student-email {
+.table-student-id {
+  font-size: 0.725rem;
+  color: #6B7280;
+  font-family: monospace;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.table-email-cell {
+  font-size: 0.825rem;
+  color: #374151;
+  font-weight: 600;
+}
+
+.table-dept-pill {
+  display: inline-block;
+  padding: 0.3rem 0.65rem;
+  background: #F3F4F6;
+  border: 1.5px solid #1B1B1B;
+  border-radius: 8px;
   font-size: 0.75rem;
-  color: #555555;
-  margin: 0;
+  font-weight: 800;
+  color: #1B1B1B;
+  box-shadow: 1.5px 1.5px 0px #1B1B1B;
+  white-space: nowrap;
 }
 
-.table-action-group {
+.table-gpa-cell {
   display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 90px;
+}
+
+.table-gpa-number {
+  font-size: 0.9rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.table-gpa-mini-track {
+  width: 100%;
+  height: 6px;
+  background: #E5E7EB;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid #1B1B1B;
+}
+
+.table-gpa-mini-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.table-metric-tag {
+  display: inline-block;
+  padding: 0.25rem 0.55rem;
+  background: #EEF2FF;
+  border: 1.5px solid #1B1B1B;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #1B1B1B;
+}
+
+.table-attendance-tag {
+  display: inline-block;
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  border: 1.5px solid #1B1B1B;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.table-attendance-tag.attendance-high {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.table-attendance-tag.attendance-mid {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.table-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  border: 1.5px solid #1B1B1B;
+  font-size: 0.75rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.status-dot-mini {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.table-date-cell {
+  font-size: 0.8rem;
+  color: #4B5563;
+  white-space: nowrap;
+}
+
+.table-actions-group {
+  display: flex;
+  align-items: center;
   gap: 0.4rem;
 }
 
-.table-icon-btn {
-  padding: 0.45rem;
-  border-radius: 6px;
-  background: #F1FAEE;
-  border: 1.5px solid #1B1B1B;
-  color: #1B1B1B;
+.table-action-icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid #1B1B1B;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   box-shadow: 2px 2px 0px #1B1B1B;
   transition: all 0.15s ease;
+  color: #1B1B1B;
 }
 
-.table-icon-btn:hover {
-  background: #00BFFF;
+.table-action-icon-btn:hover {
   transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #1B1B1B;
 }
 
-.table-icon-btn.delete-btn:hover {
+.table-action-icon-btn.edit-icon-btn:hover {
+  background: #00BFFF;
+}
+
+.table-action-icon-btn.delete-icon-btn:hover {
   background: #FF6F61;
   color: #FFFFFF;
 }
@@ -2321,7 +2497,7 @@
   flex-direction: column;
   gap: 2rem;
   animation: fadeIn 0.25s ease;
-  max-width: 1100px;
+  width: 100%;
 }
 
 .settings-hero-banner {
@@ -3275,6 +3451,7 @@
   flex-direction: column;
   gap: 1.75rem;
   animation: fadeIn 0.25s ease;
+  width: 100%;
 }
 
 .settings-hero-banner {

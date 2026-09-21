@@ -122,9 +122,14 @@ export const initialStudents = rawStudents.map(student => {
   }
 
   const resolvedAvatar = avatarMap[student.avatar] || student.avatar || boy1;
+  const spiValue = Number(((student.gpa / 4.0) * 10).toFixed(2));
+  const updatedStudentId = (student.studentId || '').replace('STU-2024-', 'STU-2026-') || ('STU-2026-' + String(student.id).padStart(3, '0'));
 
   return {
     ...student,
+    studentId: updatedStudentId,
+    gpa: spiValue, // 10-point SPI system
+    spi: spiValue,
     avatar: resolvedAvatar,
     initials: initials || 'ST'
   };

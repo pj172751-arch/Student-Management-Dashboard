@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { AcademicCap, DashboardIcon, UsersIcon, BookOpenIcon, AnalyticsIcon, SettingsIcon } from './Icons';
 
-function Sidebar({ activeSection, onSectionChange }) {
-  const [collapsed, setCollapsed] = useState(false);
+function Sidebar({ activeSection, onSectionChange, collapsed, onToggleCollapse }) {
 
   const navItems = [
     { id: 'dashboard', icon: DashboardIcon, label: 'Dashboard' },
@@ -65,11 +64,11 @@ function Sidebar({ activeSection, onSectionChange }) {
 
         <button
           className="sidebar-collapse-btn"
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={onToggleCollapse}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           id="sidebar-collapse-btn"
         >
-          <span className="collapse-arrow">{collapsed ? "EXPAND" : "COLLAPSE"}</span>
+          <span className="collapse-arrow">{collapsed ? "»" : "« COLLAPSE"}</span>
         </button>
       </div>
     </aside>

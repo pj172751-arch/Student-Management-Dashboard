@@ -29,7 +29,7 @@ function StatsPanel({ students }) {
   const avgGpa = students.length > 0
     ? (students.reduce((sum, s) => sum + s.gpa, 0) / students.length)
     : 0;
-  const topPerformers = students.filter(s => s.gpa >= 3.5).length;
+  const topPerformers = students.filter(s => s.gpa >= 8.5).length;
   const activeRate = totalStudents > 0 ? Math.round((activeStudents / totalStudents) * 100) : 0;
 
   const stats = [
@@ -45,12 +45,12 @@ function StatsPanel({ students }) {
     },
     {
       id: 'stat-avg-gpa',
-      label: 'Cumulative GPA Average',
+      label: 'Institute SPI Average',
       value: avgGpa,
       isDecimal: true,
       icon: AwardIcon,
       accentColor: 'var(--cyan)',
-      trend: 'Scale: 4.0 Max',
+      trend: 'Scale: 10.0 Max',
       badge: 'Institution Mean'
     },
     {
@@ -65,13 +65,13 @@ function StatsPanel({ students }) {
     },
     {
       id: 'stat-top-performers',
-      label: "Dean's List Honors",
+      label: "Dean's Honor Roll",
       value: topPerformers,
       isDecimal: false,
       icon: TrophyIcon,
       accentColor: 'var(--amber)',
-      trend: 'GPA 3.50 or higher',
-      badge: 'High Honors'
+      trend: 'SPI 8.50 or higher',
+      badge: 'Distinction'
     }
   ];
 

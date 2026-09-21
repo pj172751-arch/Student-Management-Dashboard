@@ -30,21 +30,21 @@ function AnalyticsView({ students }) {
   const avgCredits = total > 0 ? Math.round(students.reduce((acc, s) => acc + (s.credits || 0), 0) / total) : 0;
 
   // Grade Honor Tiers
-  const deansList = students.filter(s => s.gpa >= 3.8).length;
-  const honors = students.filter(s => s.gpa >= 3.4 && s.gpa < 3.8).length;
-  const goodStanding = students.filter(s => s.gpa >= 3.0 && s.gpa < 3.4).length;
-  const academicNotice = students.filter(s => s.gpa < 3.0).length;
+  const deansList = students.filter(s => s.gpa >= 9.0).length;
+  const honors = students.filter(s => s.gpa >= 8.5 && s.gpa < 9.0).length;
+  const goodStanding = students.filter(s => s.gpa >= 7.5 && s.gpa < 8.5).length;
+  const academicNotice = students.filter(s => s.gpa < 7.0).length;
 
-  // 1. ACCURATE HISTOGRAM BINS: Real distribution from 2.60 to 4.00 (No empty bins)
+  // 1. ACCURATE HISTOGRAM BINS: Real distribution from 6.50 to 10.00 (No empty bins)
   const histogramBins = useMemo(() => {
     const bins = [
-      { label: '2.60–2.79', min: 2.60, max: 2.80, color: '#FF6F61', tier: 'Academic Notice' },
-      { label: '2.80–2.99', min: 2.80, max: 3.00, color: '#FFA094', tier: 'Academic Notice' },
-      { label: '3.00–3.19', min: 3.00, max: 3.20, color: '#00FFAE', tier: 'Good Standing' },
-      { label: '3.20–3.39', min: 3.20, max: 3.40, color: '#00E59D', tier: 'Good Standing' },
-      { label: '3.40–3.59', min: 3.40, max: 3.60, color: '#00BFFF', tier: 'Honors Standing' },
-      { label: '3.60–3.79', min: 3.60, max: 3.80, color: '#38D39F', tier: 'Honors Standing' },
-      { label: '3.80–4.00', min: 3.80, max: 4.01, color: '#FFE600', tier: "Dean's List" }
+      { label: '6.50–6.99', min: 6.50, max: 7.00, color: '#FF6F61', tier: 'Remedial Notice' },
+      { label: '7.00–7.49', min: 7.00, max: 7.50, color: '#FFA094', tier: 'Pass Standing' },
+      { label: '7.50–7.99', min: 7.50, max: 8.00, color: '#00FFAE', tier: 'Good Standing' },
+      { label: '8.00–8.49', min: 8.00, max: 8.50, color: '#00E59D', tier: 'First Class' },
+      { label: '8.50–8.99', min: 8.50, max: 9.00, color: '#00BFFF', tier: 'Honors Standing' },
+      { label: '9.00–9.49', min: 9.00, max: 9.50, color: '#38D39F', tier: "Dean's List" },
+      { label: '9.50–10.00', min: 9.50, max: 10.01, color: '#FFE600', tier: 'Merit Distinction' }
     ];
 
     return bins.map(bin => {
@@ -102,19 +102,19 @@ function AnalyticsView({ students }) {
     const b = (sumY - m * sumX) / n;
 
     // Y values at attendance = 70% and attendance = 100%
-    const yAt70 = Math.min(4.0, Math.max(2.5, m * 70 + b));
-    const yAt100 = Math.min(4.0, Math.max(2.5, m * 100 + b));
+    const yAt70 = Math.min(10.0, Math.max(6.0, m * 70 + b));
+    const yAt100 = Math.min(10.0, Math.max(6.0, m * 100 + b));
 
     return { m, b, yAt70, yAt100 };
   }, [scatterFilteredStudents]);
 
-  // Coordinates mapper: X from 70% to 100%, Y from 2.50 to 4.00
+  // Coordinates mapper: X from 70% to 100%, Y from 6.00 to 10.00
   // SVG Area: X from 80 to 840 (width 760), Y from 70 to 430 (height 360)
   const mapScatterCoords = (attendance, gpa) => {
     const clampedAtt = Math.max(70, Math.min(100, attendance || 85));
-    const clampedGpa = Math.max(2.50, Math.min(4.00, gpa || 3.33));
+    const clampedGpa = Math.max(6.00, Math.min(10.00, gpa || 8.33));
     const x = 80 + ((clampedAtt - 70) / 30) * 760;
-    const y = 430 - ((clampedGpa - 2.50) / 1.50) * 360;
+    const y = 430 - ((clampedGpa - 6.00) / 4.00) * 360;
     return { x, y };
   };
 
@@ -154,30 +154,11 @@ function AnalyticsView({ students }) {
 
   return (
     <div className="analytics-view-wrapper" id="analytics-view">
-      {/* Header Banner */}
-      <div className="analytics-header-banner">
-        <div className="analytics-header-title-group">
-          <div className="analytics-icon-badge">
-            <AnalyticsIcon size={26} />
-          </div>
-          <div>
-            <h1 className="analytics-main-title">Institutional Academic Analytics &amp; Statistical Charts</h1>
-            <p className="analytics-main-subtitle">
-              Cumulative GPA distribution histogram, attendance correlation scatter plot with program color-coding, and department benchmarks.
-            </p>
-          </div>
-        </div>
-        <div className="analytics-header-pills">
-          <span className="analytics-pill-tag">10 Dedicated Program Colors</span>
-          <span className="analytics-pill-tag pill-gold">Live Math Engine</span>
-        </div>
-      </div>
-
       {/* Top 4 Summary KPI Cards */}
       <div className="analytics-summary-cards">
         <div className="summary-stat-box accent-cyan">
-          <span className="summary-stat-label">Institution Mean GPA</span>
-          <span className="summary-stat-val">{avgGpa} / 4.0</span>
+          <span className="summary-stat-label">Institution Mean SPI</span>
+          <span className="summary-stat-val">{avgGpa} / 10.0</span>
           <span className="summary-stat-sub">Across {total} verified scholars</span>
         </div>
         <div className="summary-stat-box accent-emerald">
@@ -186,14 +167,14 @@ function AnalyticsView({ students }) {
           <span className="summary-stat-sub">{students.filter(s => s.attendance >= 90).length} scholars above 90%</span>
         </div>
         <div className="summary-stat-box accent-amber">
-          <span className="summary-stat-label">Dean's List Scholars</span>
+          <span className="summary-stat-label">Dean's Honor Roll</span>
           <span className="summary-stat-val">{deansList} Students</span>
-          <span className="summary-stat-sub">{((deansList / (total || 1)) * 100).toFixed(1)}% of total enrollment</span>
+          <span className="summary-stat-sub">SPI ≥ 9.00 ({((deansList / (total || 1)) * 100).toFixed(1)}%)</span>
         </div>
         <div className="summary-stat-box accent-rose">
-          <span className="summary-stat-label">Honors Tier Standing</span>
+          <span className="summary-stat-label">First Class Honors</span>
           <span className="summary-stat-val">{honors} Students</span>
-          <span className="summary-stat-sub">Cumulative GPA 3.40 – 3.79</span>
+          <span className="summary-stat-sub">Semester SPI 8.50 – 8.99</span>
         </div>
       </div>
 
@@ -202,16 +183,16 @@ function AnalyticsView({ students }) {
         <div className="chart-header-row">
           <div>
             <div className="chart-tag-badge tag-amber">Accurate Distribution</div>
-            <h2 className="analytics-tile-title">Cumulative GPA Frequency Histogram</h2>
+            <h2 className="analytics-tile-title">Semester SPI Frequency Histogram</h2>
             <p className="analytics-tile-desc">
-              Accurate distribution of 1,000 scholars binned in 0.20 GPA increments (2.60 to 4.00). Hover bars to inspect exact metrics.
+              Accurate distribution of 1,000 scholars binned in 0.50 SPI increments (6.50 to 10.00). Hover bars to inspect exact metrics.
             </p>
           </div>
           <div className="chart-legend-row">
-            <span className="legend-chip"><span className="chip-dot dot-rose"></span> Notice (&lt;3.00)</span>
-            <span className="legend-chip"><span className="chip-dot dot-emerald"></span> Good Standing (3.00–3.39)</span>
-            <span className="legend-chip"><span className="chip-dot dot-cyan"></span> Honors (3.40–3.79)</span>
-            <span className="legend-chip"><span className="chip-dot dot-amber"></span> Dean's List (≥3.80)</span>
+            <span className="legend-chip"><span className="chip-dot dot-rose"></span> Remedial (&lt;7.00)</span>
+            <span className="legend-chip"><span className="chip-dot dot-emerald"></span> Good Standing (7.50–8.49)</span>
+            <span className="legend-chip"><span className="chip-dot dot-cyan"></span> Honors (8.50–8.99)</span>
+            <span className="legend-chip"><span className="chip-dot dot-amber"></span> Dean's List (≥9.00)</span>
           </div>
         </div>
 
@@ -414,7 +395,7 @@ function AnalyticsView({ students }) {
             {/* PROMINENT TOP-LEFT BADGE: Raised high so it is fully visible */}
             <rect x="80" y="16" width="340" height="30" rx="8" fill="#EBF8FF" stroke="#2563EB" strokeWidth="2" />
             <text x="250" y="36" textAnchor="middle" fontSize="11" fontWeight="900" fill="#2563EB" letterSpacing="0.4">
-              AUTONOMOUS SCHOLARS (Att &lt;88%, GPA ≥3.35)
+              AUTONOMOUS SCHOLARS (Att &lt;88%, SPI ≥8.35)
             </text>
 
             {/* Bottom-Left Quadrant Background: Academic Support Zone */}
@@ -423,21 +404,21 @@ function AnalyticsView({ students }) {
             {/* Bottom-Right Quadrant Background: Dedicated Effort */}
             <rect x="536" y="226" width="304" height="204" fill="#FFE600" fillOpacity="0.06" rx="10" />
 
-            {/* Quadrant Dividing Lines (Actual Means: 88% and 3.35) */}
+            {/* Quadrant Dividing Lines (Actual Means: 88% and 8.35 SPI) */}
             <line x1="536" y1="55" x2="536" y2="430" stroke="#9CA3AF" strokeWidth="2" strokeDasharray="5 5" />
             <rect x="490" y="56" width="92" height="18" rx="4" fill="#F3F4F6" stroke="#9CA3AF" strokeWidth="1" />
             <text x="536" y="69" textAnchor="middle" fontSize="9" fontWeight="900" fill="#374151">Mean Att: 88%</text>
 
             <line x1="80" y1="226" x2="840" y2="226" stroke="#9CA3AF" strokeWidth="2" strokeDasharray="5 5" />
-            <text x="40" y="230" fontSize="11" fontWeight="900" fill="#374151">3.35</text>
+            <text x="40" y="230" fontSize="11" fontWeight="900" fill="#374151">8.35</text>
 
-            {/* Horizontal Gridlines & Y-Axis Ticks (2.50 to 4.00) */}
-            {[2.50, 2.75, 3.00, 3.25, 3.50, 3.75, 4.00].map((val) => {
-              const y = 430 - ((val - 2.50) / 1.50) * 360;
+            {/* Horizontal Gridlines & Y-Axis Ticks (6.00 to 10.00) */}
+            {[6.00, 7.00, 8.00, 9.00, 10.00].map((val) => {
+              const y = 430 - ((val - 6.00) / 4.00) * 360;
               return (
                 <g key={val}>
                   <line x1="75" y1={y} x2="840" y2={y} stroke="#E5E7EB" strokeWidth="1" />
-                  <text x="68" y={y + 4} textAnchor="end" fontSize="11" fontWeight="800" fill="#4B5563">{val.toFixed(2)}</text>
+                  <text x="68" y={y + 4} textAnchor="end" fontSize="11" fontWeight="800" fill="#4B5563">{val.toFixed(1)}</text>
                 </g>
               );
             })}
@@ -466,18 +447,18 @@ function AnalyticsView({ students }) {
               fontWeight="900"
               fill="#1B1B1B"
             >
-              CUMULATIVE GPA (2.50 – 4.00)
+              SEMESTER SPI (6.00 – 10.00)
             </text>
 
             {/* Bottom Quadrant Overview Badges (Positioned cleanly below X-axis title - ZERO trendline or dot collisions) */}
             <rect x="80" y="498" width="350" height="32" rx="8" fill="#FFE5E5" stroke="#DC2626" strokeWidth="2" />
             <text x="255" y="519" textAnchor="middle" fontSize="11" fontWeight="900" fill="#DC2626" letterSpacing="0.3">
-              ACADEMIC SUPPORT FOCUS (Att &lt;88%, GPA &lt;3.35)
+              ACADEMIC SUPPORT FOCUS (Att &lt;88%, SPI &lt;8.35)
             </text>
 
             <rect x="490" y="498" width="350" height="32" rx="8" fill="#FFF8E7" stroke="#B45309" strokeWidth="2" />
             <text x="665" y="519" textAnchor="middle" fontSize="11" fontWeight="900" fill="#B45309" letterSpacing="0.3">
-              DEDICATED EFFORT (Att ≥88%, GPA &lt;3.35)
+              DEDICATED EFFORT (Att ≥88%, SPI &lt;8.35)
             </text>
 
             {/* Accurate Linear Regression Trendline */}
@@ -485,9 +466,9 @@ function AnalyticsView({ students }) {
               <g>
                 <line
                   x1="80"
-                  y1={430 - ((trendline.yAt70 - 2.50) / 1.50) * 360}
+                  y1={430 - ((trendline.yAt70 - 6.00) / 4.00) * 360}
                   x2="840"
-                  y2={430 - ((trendline.yAt100 - 2.50) / 1.50) * 360}
+                  y2={430 - ((trendline.yAt100 - 6.00) / 4.00) * 360}
                   stroke="#7C3AED"
                   strokeWidth="3.5"
                   strokeDasharray="8 5"
@@ -547,7 +528,7 @@ function AnalyticsView({ students }) {
               </div>
               <div className="detail-metrics-row">
                 <div className="detail-metric-chip">
-                  <span>GPA:</span>
+                  <span>SPI:</span>
                   <strong>{Number(hoveredPoint.gpa).toFixed(2)}</strong>
                 </div>
                 <div className="detail-metric-chip">

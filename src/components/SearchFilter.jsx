@@ -99,7 +99,7 @@ function SearchFilter({
         </div>
 
         <div className="filter-select-group">
-          <label className="filter-field-label">Min GPA</label>
+          <label className="filter-field-label">Min SPI</label>
           <input
             type="number"
             id="filter-gpa-min"
@@ -107,22 +107,22 @@ function SearchFilter({
             placeholder="0.0"
             step="0.1"
             min="0"
-            max="4"
+            max="10"
             value={filters.gpaMin}
             onChange={(e) => onFilterChange('gpaMin', e.target.value)}
           />
         </div>
 
         <div className="filter-select-group">
-          <label className="filter-field-label">Max GPA</label>
+          <label className="filter-field-label">Max SPI</label>
           <input
             type="number"
             id="filter-gpa-max"
             className="filter-number-input"
-            placeholder="4.0"
+            placeholder="10.0"
             step="0.1"
             min="0"
-            max="4"
+            max="10"
             value={filters.gpaMax}
             onChange={(e) => onFilterChange('gpaMax', e.target.value)}
           />

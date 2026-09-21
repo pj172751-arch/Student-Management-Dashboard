@@ -1,12 +1,12 @@
 import { AcademicCap, PlusIcon } from './Icons';
 
-function Header({ onAddStudent }) {
+function Header({ onAddStudent, institutionName = 'LJ Polytechnic' }) {
   return (
     <header className="floating-header" id="app-header">
       <div className="header-left">
         <div className="header-brand-badge">
           <AcademicCap className="brand-cap-icon" size={24} />
-          <span className="brand-badge-pill">Academic Portal</span>
+          <span className="brand-badge-pill">{institutionName}</span>
         </div>
         <div className="header-title-group">
           <h1 className="header-title">Student Directory</h1>

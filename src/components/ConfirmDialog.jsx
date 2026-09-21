@@ -16,9 +16,9 @@ function ConfirmDialog({ student, onConfirm, onCancel }) {
           <div className="confirm-student-summary">
             <span className="summary-dept">{student.department}</span>
             <span className="summary-bullet">•</span>
-            <span className="summary-id">{student.studentId || `STU-2024-${String(student.id).padStart(3, '0')}`}</span>
+            <span className="summary-id">{student.studentId || `STU-2026-${String(student.id).padStart(3, '0')}`}</span>
             <span className="summary-bullet">•</span>
-            <span className="summary-gpa">{student.gpa.toFixed(2)} GPA</span>
+            <span className="summary-gpa">{student.gpa.toFixed(2)} SPI</span>
           </div>
           <p className="confirm-warning-note">
             This operation is permanent and will remove the student’s academic data from the active registry.

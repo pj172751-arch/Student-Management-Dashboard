@@ -2,10 +2,11 @@ import { EditIcon, TrashIcon, SortAscIcon, SortDescIcon, SortDefaultIcon } from 
 
 function StudentTable({ students, onEdit, onDelete, sortConfig, onSort }) {
   const getGpaColor = (gpa) => {
-    if (gpa >= 3.8) return 'var(--amber)';
-    if (gpa >= 3.5) return 'var(--cyan)';
-    if (gpa >= 3.0) return 'var(--emerald)';
-    return 'var(--rose)';
+    if (gpa >= 9.0) return '#FFE600';
+    if (gpa >= 8.5) return '#00BFFF';
+    if (gpa >= 7.5) return '#00FFAE';
+    if (gpa >= 6.0) return '#FF9F1C';
+    return '#FF6F61';
   };
 
   const getStatusBadge = (status) => {
@@ -53,7 +54,7 @@ function StudentTable({ students, onEdit, onDelete, sortConfig, onSort }) {
             </th>
             <th onClick={() => onSort('gpa')} className="th-sortable">
               <div className="th-content">
-                <span>Cumulative GPA</span>
+                <span>Semester SPI</span>
                 {renderSortIcon('gpa')}
               </div>
             </th>
@@ -86,7 +87,7 @@ function StudentTable({ students, onEdit, onDelete, sortConfig, onSort }) {
         </thead>
         <tbody>
           {students.map((student) => {
-            const studentId = student.studentId || `STU-2024-${String(student.id).padStart(3, '0')}`;
+            const studentId = student.studentId || `STU-2026-${String(student.id).padStart(3, '0')}`;
             const initials = student.initials || (student.name ? student.name.slice(0, 2).toUpperCase() : 'ST');
             return (
               <tr key={student.id} className="table-data-row">
@@ -128,7 +129,7 @@ function StudentTable({ students, onEdit, onDelete, sortConfig, onSort }) {
                       <div
                         className="table-gpa-mini-fill"
                         style={{
-                          width: `${(student.gpa / 4.0) * 100}%`,
+                          width: `${(student.gpa / 10.0) * 100}%`,
                           backgroundColor: getGpaColor(student.gpa)
                         }}
                       ></div>

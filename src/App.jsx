@@ -34,19 +34,53 @@ function App() {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(24);
+  // System & Institutional Settings
+  const [systemSettings, setSystemSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem('lj_polytechnic_settings');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      // ignore
+    }
+    return {
+      institutionName: 'LJ Polytechnic',
+      academicYear: '2026–2027 Academic Session',
+      registrarEmail: 'registrar@ljpolytechnic.edu',
+      emailDomain: 'ljpolytechnic.edu',
+      deansListGpa: 9.00,
+      honorsGpa: 8.50,
+      passingGpa: 5.00,
+      defaultView: 'cards',
+      defaultPageSize: '24',
+      enableAutoSave: true,
+      requireEmailVerification: true
+    };
+  });
 
   const addToast = useCallback((message, type = 'success') => {
-    const id = Date.now();
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     setToasts(prev => [...prev, { id, message, type }]);
   }, []);
 
   const removeToast = useCallback((id) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
+
+  const handleSaveSettings = useCallback((newSettings) => {
+    setSystemSettings(newSettings);
+    try {
+      localStorage.setItem('lj_polytechnic_settings', JSON.stringify(newSettings));
+    } catch (e) {
+      // ignore
+    }
+    addToast('Institutional settings and academic criteria updated successfully.', 'success');
+  }, [addToast]);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(24);
 
   const handleFilterChange = useCallback((key, value) => {
     if (key === 'clear') {
@@ -167,7 +201,7 @@ function App() {
       addToast(`Student record for ${formData.name} was successfully updated.`, 'success');
     } else {
       const newId = Math.max(...students.map(s => s.id), 0) + 1;
-      const newStuId = formData.studentId || `STU-2024-${String(newId).padStart(3, '0')}`;
+      const newStuId = formData.studentId || `STU-2026-${String(newId).padStart(3, '0')}`;
       setStudents(prev => [{ ...formData, id: newId, studentId: newStuId }, ...prev]);
       addToast(`New student ${formData.name} was successfully enrolled.`, 'success');
     }
@@ -196,7 +230,7 @@ function App() {
   const endIndex = Math.min(currentPage * itemsPerPage, filteredStudents.length);
 
   return (
-    <div className={`app-root-layout ${mobileMenuOpen ? 'mobile-menu-active' : ''}`}>
+    <div className={`app-root-layout ${mobileMenuOpen ? 'mobile-menu-active' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       {/* Mobile Menu Toggle Button */}
       <button
         className="mobile-hamburger-btn"
@@ -216,18 +250,22 @@ function App() {
           setActiveSection(section);
           setMobileMenuOpen(false);
         }}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
       {/* Main Content Area */}
       <div className="main-content-scroll">
-        <Header onAddStudent={handleAddStudent} />
+        <Header onAddStudent={handleAddStudent} institutionName={systemSettings.institutionName} />
 
         <main className="dashboard-body-container">
           {/* SECTION: SETTINGS PAGE */}
           {activeSection === 'settings' && (
             <SettingsPage
               students={students}
+              settings={systemSettings}
               onResetData={handleResetData}
+              onSaveSettings={handleSaveSettings}
               addToast={addToast}
             />
           )}
@@ -254,8 +292,8 @@ function App() {
               {/* Hero Welcome Banner */}
               <div className="dashboard-welcome-banner" id="dashboard-welcome-banner">
                 <div className="welcome-text-group">
-                  <div className="welcome-badge-tag">Academic Term 2024–2025 • Active Session</div>
-                  <h1 className="welcome-heading">Metropolitan University Registry</h1>
+                  <div className="welcome-badge-tag">{systemSettings.academicYear} • Active Session</div>
+                  <h1 className="welcome-heading">{systemSettings.institutionName} Registry</h1>
                   <p className="welcome-subheading">
                     Real-time scholar tracking, grade performance metrics, and enrollment administration for {students.length} students.
                   </p>

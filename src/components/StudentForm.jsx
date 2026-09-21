@@ -7,10 +7,10 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
     name: student?.name || '',
     email: student?.email || '',
     department: student?.department || departments[0],
-    gpa: student?.gpa !== undefined ? String(student.gpa) : '3.50',
+    gpa: student?.gpa !== undefined ? String(student.gpa) : '8.50',
     status: student?.status || 'Active',
     enrollmentDate: student?.enrollmentDate || new Date().toISOString().split('T')[0],
-    studentId: student?.studentId || (student ? `STU-2024-${String(student.id).padStart(3, '0')}` : ''),
+    studentId: student?.studentId || (student ? `STU-2026-${String(student.id).padStart(3, '0')}` : ''),
     avatar: student?.avatar || boyAvatars[0],
     credits: student?.credits !== undefined ? Number(student.credits) : 60,
     attendance: student?.attendance !== undefined ? Number(student.attendance) : 90,
@@ -43,18 +43,18 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
         return '';
       case 'email':
         if (!value.trim()) return 'Institutional email is required';
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid institutional email address';
-        if (existingEmails && existingEmails.includes(value.toLowerCase()) && value.toLowerCase() !== student?.email?.toLowerCase()) {
-          return 'This email address is already assigned to another student record';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return 'Please enter a valid institutional email';
+        if (!student && existingEmails && existingEmails.includes(value.trim().toLowerCase())) {
+          return 'This email address is already enrolled';
         }
         return '';
       case 'department':
         if (!value) return 'Department selection is required';
         return '';
       case 'gpa':
-        if (value === '' || value === undefined) return 'Cumulative GPA is required';
+        if (value === '' || value === undefined) return 'Semester SPI is required';
         const numGpa = parseFloat(value);
-        if (isNaN(numGpa) || numGpa < 0 || numGpa > 4.0) return 'GPA must be a valid number between 0.00 and 4.00';
+        if (isNaN(numGpa) || numGpa < 0 || numGpa > 10.0) return 'SPI must be a valid number between 0.00 and 10.00';
         return '';
       case 'enrollmentDate':
         if (!value) return 'Enrollment date is required';
@@ -326,7 +326,7 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
 
               <div className="form-input-group">
                 <label className="form-label" htmlFor="input-student-gpa">
-                  Cumulative GPA (0.00 – 4.00) <span className="required-star">*</span>
+                  Semester SPI (0.00 – 10.00) <span className="required-star">*</span>
                 </label>
                 <div className="gpa-input-wrapper">
                   <input
@@ -337,12 +337,12 @@ function StudentForm({ student, onSubmit, onClose, existingEmails }) {
                     onBlur={handleBlur}
                     step="0.01"
                     min="0"
-                    max="4.0"
-                    placeholder="3.75"
+                    max="10.0"
+                    placeholder="8.75"
                     className={`form-input-control ${errors.gpa && touched.gpa ? 'input-error' : ''}`}
                     id="input-student-gpa"
                   />
-                  <span className="gpa-scale-addon">/ 4.00</span>
+                  <span className="gpa-scale-addon">/ 10.00 SPI</span>
                 </div>
                 {errors.gpa && touched.gpa && (
                   <div className="field-error-text">

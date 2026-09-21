@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { SettingsIcon, CheckCircleIcon, RotateCcwIcon, AwardIcon, AcademicCap, UsersIcon, BookOpenIcon } from './Icons';
 
-function SettingsPage({ students, onResetData, onSaveSettings, addToast }) {
+function SettingsPage({ students, settings: externalSettings, onResetData, onSaveSettings, addToast }) {
   const [activeTab, setActiveTab] = useState('institution'); // 'institution' | 'grading' | 'display' | 'data'
 
-  const [settings, setSettings] = useState({
-    institutionName: 'Metropolitan University of Technology',
-    academicYear: '2024–2025 Academic Term',
-    registrarEmail: 'registrar@university.edu',
-    emailDomain: 'university.edu',
-    deansListGpa: 3.80,
-    honorsGpa: 3.50,
-    passingGpa: 2.00,
+  const [settings, setSettings] = useState(() => externalSettings || {
+    institutionName: 'LJ Polytechnic',
+    academicYear: '2026–2027 Academic Session',
+    registrarEmail: 'registrar@ljpolytechnic.edu',
+    emailDomain: 'ljpolytechnic.edu',
+    deansListGpa: 9.00,
+    honorsGpa: 8.50,
+    passingGpa: 5.00,
     defaultView: 'cards',
     defaultPageSize: '24',
     enableAutoSave: true,
@@ -30,11 +30,15 @@ function SettingsPage({ students, onResetData, onSaveSettings, addToast }) {
   };
 
   const handleSave = (e) => {
-    e.preventDefault();
-    if (onSaveSettings) onSaveSettings(settings);
+    if (e && e.preventDefault) e.preventDefault();
+    if (onSaveSettings) {
+      onSaveSettings(settings);
+    }
     setSaved(true);
-    addToast('Institutional settings and academic criteria updated successfully.', 'success');
-    setTimeout(() => setSaved(false), 3000);
+    if (addToast) {
+      addToast('Institutional settings and academic criteria updated successfully.', 'success');
+    }
+    setTimeout(() => setSaved(false), 3500);
   };
 
   // Export current students data as JSON
@@ -191,7 +195,7 @@ function SettingsPage({ students, onResetData, onSaveSettings, addToast }) {
                     value={settings.institutionName}
                     onChange={handleChange}
                     className="settings-text-input"
-                    placeholder="e.g., Metropolitan University of Technology"
+                    placeholder="e.g., LJ Polytechnic"
                   />
                   <span className="settings-field-helper">Official title on degree certificates and exports</span>
                 </div>
@@ -207,7 +211,7 @@ function SettingsPage({ students, onResetData, onSaveSettings, addToast }) {
                     value={settings.academicYear}
                     onChange={handleChange}
                     className="settings-text-input"
-                    placeholder="e.g., 2024–2025 Academic Term"
+                    placeholder="e.g., 2026–2027 Academic Session"
                   />
                   <span className="settings-field-helper">Current enrollment cycle for stats and cards</span>
                 </div>
@@ -223,7 +227,7 @@ function SettingsPage({ students, onResetData, onSaveSettings, addToast }) {
                     value={settings.registrarEmail}
                     onChange={handleChange}
                     className="settings-text-input"
-                    placeholder="registrar@university.edu"
+                    placeholder="registrar@ljpolytechnic.edu"
                   />
                   <span className="settings-field-helper">Receives registry notifications and status alerts</span>
                 </div>
@@ -239,7 +243,7 @@ function SettingsPage({ students, onResetData, onSaveSettings, addToast }) {
                     value={settings.emailDomain}
                     onChange={handleChange}
                     className="settings-text-input"
-                    placeholder="university.edu"
+                    placeholder="ljpolytechnic.edu"
                   />
                   <span className="settings-field-helper">Used to validate enrolled student email addresses</span>
                 </div>
@@ -256,47 +260,47 @@ function SettingsPage({ students, onResetData, onSaveSettings, addToast }) {
                 <div>
                   <h2 className="spacious-card-title">Grading Scale & Distinction Thresholds</h2>
                   <p className="spacious-card-desc">
-                    Adjust cumulative GPA criteria for Top Scholars showcase, honors tags, and academic probation.
+                    Adjust Semester Performance Index (SPI) criteria for Top Scholars showcase, honors tags, and remedial probation.
                   </p>
                 </div>
                 <span className="card-section-tag tag-yellow">Scale Rules</span>
               </div>
 
-              {/* Interactive Live GPA Scale Bar */}
+              {/* Interactive Live SPI Scale Bar */}
               <div className="live-gpa-scale-container">
                 <div className="scale-title-row">
-                  <span className="scale-title">Live Cumulative GPA Spectrum</span>
-                  <span className="scale-range-label">Scale: 0.00 – 4.00 Max</span>
+                  <span className="scale-title">Live Semester Performance Index (SPI) Spectrum</span>
+                  <span className="scale-range-label">Scale: 0.00 – 10.00 Max</span>
                 </div>
 
                 <div className="scale-visual-track">
                   <div
                     className="scale-seg seg-notice"
-                    style={{ width: `${(settings.passingGpa / 4.0) * 100}%` }}
-                    title={`Academic Notice (< ${settings.passingGpa})`}
+                    style={{ width: `${(settings.passingGpa / 10.0) * 100}%` }}
+                    title={`Remedial / Notice (< ${settings.passingGpa})`}
                   >
-                    <span>Notice (&lt; {Number(settings.passingGpa).toFixed(2)})</span>
+                    <span>Notice (&lt; {Number(settings.passingGpa).toFixed(1)})</span>
                   </div>
                   <div
                     className="scale-seg seg-good"
-                    style={{ width: `${((settings.honorsGpa - settings.passingGpa) / 4.0) * 100}%` }}
+                    style={{ width: `${((settings.honorsGpa - settings.passingGpa) / 10.0) * 100}%` }}
                     title={`Good Standing (${settings.passingGpa} - ${settings.honorsGpa})`}
                   >
                     <span>Good Standing</span>
                   </div>
                   <div
                     className="scale-seg seg-honors"
-                    style={{ width: `${((settings.deansListGpa - settings.honorsGpa) / 4.0) * 100}%` }}
+                    style={{ width: `${((settings.deansListGpa - settings.honorsGpa) / 10.0) * 100}%` }}
                     title={`Honors (${settings.honorsGpa} - ${settings.deansListGpa})`}
                   >
                     <span>Honors</span>
                   </div>
                   <div
                     className="scale-seg seg-deans"
-                    style={{ width: `${((4.0 - settings.deansListGpa) / 4.0) * 100}%` }}
+                    style={{ width: `${((10.0 - settings.deansListGpa) / 10.0) * 100}%` }}
                     title={`Dean's List (>= ${settings.deansListGpa})`}
                   >
-                    <span>Dean's List (≥ {Number(settings.deansListGpa).toFixed(2)})</span>
+                    <span>Dean's List (≥ {Number(settings.deansListGpa).toFixed(1)})</span>
                   </div>
                 </div>
               </div>
@@ -304,15 +308,15 @@ function SettingsPage({ students, onResetData, onSaveSettings, addToast }) {
               <div className="settings-input-grid-3">
                 <div className="settings-field-group highlight-box-amber">
                   <label className="settings-input-label" htmlFor="deansListGpa">
-                    Dean's List Cutoff (GPA)
+                    Dean's Honor Roll Cutoff (SPI)
                   </label>
                   <input
                     type="number"
                     id="deansListGpa"
                     name="deansListGpa"
-                    step="0.05"
-                    min="3.0"
-                    max="4.0"
+                    step="0.1"
+                    min="7.0"
+                    max="10.0"
                     value={settings.deansListGpa}
                     onChange={handleChange}
                     className="settings-text-input"
@@ -322,15 +326,15 @@ function SettingsPage({ students, onResetData, onSaveSettings, addToast }) {
 
                 <div className="settings-field-group highlight-box-cyan">
                   <label className="settings-input-label" htmlFor="honorsGpa">
-                    Honors Standing Cutoff (GPA)
+                    First Class Distinction Cutoff (SPI)
                   </label>
                   <input
                     type="number"
                     id="honorsGpa"
                     name="honorsGpa"
-                    step="0.05"
-                    min="2.5"
-                    max="3.8"
+                    step="0.1"
+                    min="6.0"
+                    max="9.5"
                     value={settings.honorsGpa}
                     onChange={handleChange}
                     className="settings-text-input"
@@ -340,20 +344,20 @@ function SettingsPage({ students, onResetData, onSaveSettings, addToast }) {
 
                 <div className="settings-field-group highlight-box-rose">
                   <label className="settings-input-label" htmlFor="passingGpa">
-                    Minimum Passing GPA Cutoff
+                    Minimum Passing SPI Cutoff
                   </label>
                   <input
                     type="number"
                     id="passingGpa"
                     name="passingGpa"
-                    step="0.05"
-                    min="1.0"
-                    max="3.0"
+                    step="0.1"
+                    min="3.0"
+                    max="7.0"
                     value={settings.passingGpa}
                     onChange={handleChange}
                     className="settings-text-input"
                   />
-                  <span className="settings-field-helper">Below this triggers Academic Notice warnings</span>
+                  <span className="settings-field-helper">Below this triggers Remedial Notice warnings</span>
                 </div>
               </div>
             </div>
@@ -515,6 +519,7 @@ function SettingsPage({ students, onResetData, onSaveSettings, addToast }) {
             type="submit"
             className="settings-save-button-primary"
             id="btn-save-settings"
+            onClick={handleSave}
           >
             <CheckCircleIcon size={18} />
             <span>{saved ? 'Saved Successfully!' : 'Save System Settings'}</span>

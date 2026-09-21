@@ -2,10 +2,11 @@ import { EditIcon, TrashIcon, MailIcon, CalendarIcon } from './Icons';
 
 function StudentCard({ student, onEdit, onDelete }) {
   const getGpaTier = (gpa) => {
-    if (gpa >= 3.8) return { label: "Dean's List", color: "var(--amber)", bg: "rgba(245, 158, 11, 0.12)" };
-    if (gpa >= 3.5) return { label: "Honors", color: "var(--cyan)", bg: "rgba(6, 182, 212, 0.12)" };
-    if (gpa >= 3.0) return { label: "Good Standing", color: "var(--emerald)", bg: "rgba(16, 185, 129, 0.12)" };
-    return { label: "Academic Notice", color: "var(--rose)", bg: "rgba(244, 63, 94, 0.12)" };
+    if (gpa >= 9.0) return { label: "Dean's List", color: "#FFE600", bg: "rgba(255, 230, 0, 0.2)" };
+    if (gpa >= 8.5) return { label: "Honors", color: "#00BFFF", bg: "rgba(0, 191, 255, 0.18)" };
+    if (gpa >= 7.5) return { label: "First Class", color: "#00FFAE", bg: "rgba(0, 255, 174, 0.18)" };
+    if (gpa >= 6.0) return { label: "Pass Class", color: "#FF9F1C", bg: "rgba(255, 159, 28, 0.18)" };
+    return { label: "Remedial Notice", color: "#FF6F61", bg: "rgba(255, 111, 97, 0.18)" };
   };
 
   const getStatusColor = (status) => {
@@ -24,7 +25,7 @@ function StudentCard({ student, onEdit, onDelete }) {
 
   const gpaTier = getGpaTier(student.gpa);
   const statusColors = getStatusColor(student.status);
-  const studentId = student.studentId || `STU-2024-${String(student.id).padStart(3, '0')}`;
+  const studentId = student.studentId || `STU-2026-${String(student.id).padStart(3, '0')}`;
   const initials = student.initials || (student.name ? student.name.slice(0, 2).toUpperCase() : 'ST');
 
   return (
@@ -118,7 +119,7 @@ function StudentCard({ student, onEdit, onDelete }) {
         <div className="gpa-details-row">
           <div className="gpa-score-group">
             <span className="gpa-val">{Number(student.gpa).toFixed(2)}</span>
-            <span className="gpa-scale">/ 4.0</span>
+            <span className="gpa-scale">/ 10.0 SPI</span>
           </div>
           <span
             className="gpa-tier-pill"
@@ -132,7 +133,7 @@ function StudentCard({ student, onEdit, onDelete }) {
           <div
             className="gpa-progress-bar"
             style={{
-              width: `${(student.gpa / 4.0) * 100}%`,
+              width: `${(student.gpa / 10.0) * 100}%`,
               backgroundColor: gpaTier.color
             }}
           ></div>
